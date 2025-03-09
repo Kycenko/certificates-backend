@@ -1,0 +1,35 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthPayload {
+  accessToken: String!
+  refreshToken: String!
+  user: User!
+}
+
+input LoginInput {
+  login: String!
+  password: String!
+}
+
+type Mutation {
+  login(loginInput: LoginInput!): AuthPayload!
+  register(registerInput: RegisterInput!): AuthPayload!
+}
+
+type Query {
+  hello: String!
+}
+
+input RegisterInput {
+  isAdmin: Boolean!
+  login: String!
+  password: String!
+}
+
+type User {
+  id: ID!
+  isAdmin: Boolean!
+  login: String!
+}
