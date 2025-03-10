@@ -15,6 +15,7 @@ input LoginInput {
 
 type Mutation {
   login(loginInput: LoginInput!): AuthPayload!
+  logout(id: String!): String!
   register(registerInput: RegisterInput!): AuthPayload!
 }
 

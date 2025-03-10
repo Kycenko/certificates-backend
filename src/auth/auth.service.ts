@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt'
 import { hash, verify } from 'argon2'
 import { LoginInput } from './dto/login.input'
 import { RegisterInput } from './dto/register.input'
-import { AuthPayload } from './entities/auth.payload'
+import { AuthPayload } from './models/auth.payload'
 @Injectable()
 export class AuthService {
 	constructor(
