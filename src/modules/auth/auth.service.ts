@@ -9,6 +9,7 @@ import { hash, verify } from 'argon2'
 import { LoginInput } from './dto/login.input'
 import { RegisterInput } from './dto/register.input'
 import { AuthPayload } from './models/auth.payload'
+
 @Injectable()
 export class AuthService {
 	constructor(
@@ -17,111 +18,95 @@ export class AuthService {
 	) {}
 
 	async login(dto: LoginInput): Promise<AuthPayload> {
-		const user = await this.prisma.user.findUnique({
-			where: { login: dto.login }
-		})
+		const user = await this.findUserByLogin(dto.login)
+		if (!user) throw new UnauthorizedException('User not found')
 
-		if (!user) {
-			throw new UnauthorizedException('User not found')
-		}
-
-		const isPasswordValid = await verify(user.password, dto.password)
-
-		if (!isPasswordValid) {
-			throw new UnauthorizedException('Invalid password')
-		}
+		await this.verifyPassword(dto.password, user.password)
 
 		const tokens = await this.issueTokens(user.id)
+		await this.updateRefreshToken(user.id, tokens.refreshToken)
+		await this.updateLastLogin(user.id)
 
-		await this.prisma.user.update({
-			where: { id: user.id },
-			data: { refreshToken: tokens.refreshToken }
-		})
-
-		return {
-			accessToken: tokens.accessToken,
-			refreshToken: tokens.refreshToken,
-			user: {
-				id: user.id,
-				login: user.login,
-				isAdmin: user.isAdmin
-			}
-		}
+		return this.buildAuthPayload(user, tokens)
 	}
 
-	async register(user: RegisterInput): Promise<AuthPayload> {
-		const oldUser = await this.prisma.user.findUnique({
-			where: { login: user.login }
-		})
+	async register(dto: RegisterInput): Promise<AuthPayload> {
+		const existingUser = await this.findUserByLogin(dto.login)
+		if (existingUser) throw new ConflictException('User already exists')
 
-		if (oldUser) {
-			throw new ConflictException('User already exists')
-		}
-
-		const hashedPassword = await hash(user.password)
-
+		const hashedPassword = await hash(dto.password)
 		const newUser = await this.prisma.user.create({
-			data: {
-				login: user.login,
-				password: hashedPassword,
-				isAdmin: false,
-				refreshToken: ''
-			}
+			data: { login: dto.login, password: hashedPassword, isAdmin: false }
 		})
 
 		const tokens = await this.issueTokens(newUser.id)
+		await this.updateRefreshToken(newUser.id, tokens.refreshToken)
 
-		await this.prisma.user.update({
-			where: { id: newUser.id },
-			data: { refreshToken: tokens.refreshToken }
-		})
-
-		return {
-			user: newUser,
-			...tokens
-		}
-	}
-
-	private async issueTokens(id: string) {
-		const accessToken = await this.jwt.signAsync(
-			{ id },
-			{
-				expiresIn: '15m'
-			}
-		)
-		const refreshToken = await this.jwt.signAsync(
-			{ id },
-			{
-				expiresIn: '7d'
-			}
-		)
-
-		return { accessToken, refreshToken }
+		return this.buildAuthPayload(newUser, tokens)
 	}
 
 	async getNewTokens(userId: string, refreshToken: string) {
-		const user = await this.prisma.user.findUnique({
-			where: { id: userId }
-		})
-
-		if (!user || user.refreshToken !== refreshToken) {
+		const user = await this.findUserById(userId)
+		if (
+			!user ||
+			!user.refreshToken ||
+			!(await verify(user.refreshToken, refreshToken))
+		)
 			throw new UnauthorizedException('Invalid refresh token')
-		}
 
 		const tokens = await this.issueTokens(user.id)
-
-		await this.prisma.user.update({
-			where: { id: user.id },
-			data: { refreshToken: tokens.refreshToken }
-		})
+		await this.updateRefreshToken(user.id, tokens.refreshToken)
 
 		return tokens
 	}
 
-	// async logout(id: string) {
-	// 	await this.prisma.user.update({
-	// 		where: { id },
-	// 		data: { refreshToken: '' }
-	// 	})
-	// }
+	async logout(userId: string) {
+		await this.updateRefreshToken(userId, null)
+	}
+
+	private async issueTokens(userId: string) {
+		return {
+			accessToken: await this.jwt.signAsync({ userId }, { expiresIn: '15m' }),
+			refreshToken: await this.jwt.signAsync({ userId }, { expiresIn: '7d' })
+		}
+	}
+
+	private async updateRefreshToken(
+		userId: string,
+		refreshToken: string | null
+	) {
+		const hashedToken = refreshToken ? await hash(refreshToken) : null
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: { refreshToken: hashedToken }
+		})
+	}
+
+	private async updateLastLogin(userId: string) {
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: { lastLoginAt: new Date() }
+		})
+	}
+
+	private async findUserByLogin(login: string) {
+		return this.prisma.user.findUnique({ where: { login } })
+	}
+
+	private async findUserById(id: string) {
+		return this.prisma.user.findUnique({ where: { id } })
+	}
+
+	private async verifyPassword(inputPassword: string, storedPassword: string) {
+		if (!(await verify(storedPassword, inputPassword)))
+			throw new UnauthorizedException('Invalid password')
+	}
+
+	private buildAuthPayload(user: any, tokens: any): AuthPayload {
+		return {
+			accessToken: tokens.accessToken,
+			refreshToken: tokens.refreshToken,
+			user: { id: user.id, login: user.login, isAdmin: user.isAdmin }
+		}
+	}
 }
