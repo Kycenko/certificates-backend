@@ -18,10 +18,10 @@ export class AuthResolver {
 		return this.authService.register(registerInput)
 	}
 
-	// @Mutation(() => String)
-	// async logout(@Args('id') id: string) {
-	// 	return this.authService.logout(id)
-	// }
+	@Mutation(() => String)
+	async logout(@Args('id') id: string) {
+		return this.authService.logout(id)
+	}
 
 	@Mutation(() => AuthPayload)
 	async getNewTokens(

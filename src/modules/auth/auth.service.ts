@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { hash, verify } from 'argon2'
+import { UsersService } from '../users/users.service'
 import { LoginInput } from './dto/login.input'
 import { RegisterInput } from './dto/register.input'
 import { AuthPayload } from './models/auth.payload'
@@ -14,11 +15,12 @@ import { AuthPayload } from './models/auth.payload'
 export class AuthService {
 	constructor(
 		private readonly prisma: PrismaService,
+		private readonly usersService: UsersService,
 		private readonly jwt: JwtService
 	) {}
 
 	async login(dto: LoginInput): Promise<AuthPayload> {
-		const user = await this.findUserByLogin(dto.login)
+		const user = await this.usersService.getUserByLogin(dto.login)
 		if (!user) throw new UnauthorizedException('User not found')
 
 		await this.verifyPassword(dto.password, user.password)
@@ -31,7 +33,7 @@ export class AuthService {
 	}
 
 	async register(dto: RegisterInput): Promise<AuthPayload> {
-		const existingUser = await this.findUserByLogin(dto.login)
+		const existingUser = await this.usersService.getUserByLogin(dto.login)
 		if (existingUser) throw new ConflictException('User already exists')
 
 		const hashedPassword = await hash(dto.password)
@@ -45,8 +47,8 @@ export class AuthService {
 		return this.buildAuthPayload(newUser, tokens)
 	}
 
-	async getNewTokens(userId: string, refreshToken: string) {
-		const user = await this.findUserById(userId)
+	async getNewTokens(id: string, refreshToken: string) {
+		const user = await this.usersService.getUserById(id)
 		if (
 			!user ||
 			!user.refreshToken ||
@@ -60,41 +62,30 @@ export class AuthService {
 		return tokens
 	}
 
-	async logout(userId: string) {
-		await this.updateRefreshToken(userId, null)
+	async logout(id: string) {
+		await this.updateRefreshToken(id, null)
 	}
 
-	private async issueTokens(userId: string) {
+	private async issueTokens(id: string) {
 		return {
-			accessToken: await this.jwt.signAsync({ userId }, { expiresIn: '15m' }),
-			refreshToken: await this.jwt.signAsync({ userId }, { expiresIn: '7d' })
+			accessToken: await this.jwt.signAsync({ id }, { expiresIn: '15m' }),
+			refreshToken: await this.jwt.signAsync({ id }, { expiresIn: '7d' })
 		}
 	}
 
-	private async updateRefreshToken(
-		userId: string,
-		refreshToken: string | null
-	) {
+	private async updateRefreshToken(id: string, refreshToken: string | null) {
 		const hashedToken = refreshToken ? await hash(refreshToken) : null
 		await this.prisma.user.update({
-			where: { id: userId },
+			where: { id },
 			data: { refreshToken: hashedToken }
 		})
 	}
 
-	private async updateLastLogin(userId: string) {
+	private async updateLastLogin(id: string) {
 		await this.prisma.user.update({
-			where: { id: userId },
+			where: { id },
 			data: { lastLoginAt: new Date() }
 		})
-	}
-
-	private async findUserByLogin(login: string) {
-		return this.prisma.user.findUnique({ where: { login } })
-	}
-
-	private async findUserById(id: string) {
-		return this.prisma.user.findUnique({ where: { id } })
 	}
 
 	private async verifyPassword(inputPassword: string, storedPassword: string) {

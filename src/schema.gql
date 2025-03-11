@@ -14,13 +14,16 @@ input LoginInput {
 }
 
 type Mutation {
+  changePassword(id: String!, newPassword: String!, oldPassword: String!): User!
   getNewTokens(refreshToken: String!, userId: String!): AuthPayload!
   login(loginInput: LoginInput!): AuthPayload!
+  logout(id: String!): String!
   register(registerInput: RegisterInput!): AuthPayload!
   updateUser(data: UpdateUserInput!, id: String!): User!
 }
 
 type Query {
+  getUserByLogin(login: String!): User!
   hello: String!
   me: User!
 }
