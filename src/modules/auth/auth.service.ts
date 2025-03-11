@@ -1,4 +1,4 @@
-import { PrismaService } from '@/prisma.service'
+import { PrismaService } from '@/core/prisma/prisma.service'
 import {
 	ConflictException,
 	Injectable,
@@ -118,10 +118,10 @@ export class AuthService {
 		return tokens
 	}
 
-	async logout(id: string) {
-		await this.prisma.user.update({
-			where: { id },
-			data: { refreshToken: '' }
-		})
-	}
+	// async logout(id: string) {
+	// 	await this.prisma.user.update({
+	// 		where: { id },
+	// 		data: { refreshToken: '' }
+	// 	})
+	// }
 }

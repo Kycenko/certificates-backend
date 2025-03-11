@@ -14,19 +14,27 @@ input LoginInput {
 }
 
 type Mutation {
+  getNewTokens(refreshToken: String!, userId: String!): AuthPayload!
   login(loginInput: LoginInput!): AuthPayload!
-  logout(id: String!): String!
   register(registerInput: RegisterInput!): AuthPayload!
+  updateUser(data: UpdateUserInput!, id: String!): User!
 }
 
 type Query {
   hello: String!
+  me: User!
 }
 
 input RegisterInput {
   isAdmin: Boolean!
   login: String!
   password: String!
+}
+
+input UpdateUserInput {
+  isAdmin: Boolean
+  login: String
+  password: String
 }
 
 type User {
