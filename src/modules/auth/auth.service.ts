@@ -7,8 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { hash, verify } from 'argon2'
 import { UsersService } from '../users/users.service'
-import { LoginInput } from './dto/login.input'
-import { RegisterInput } from './dto/register.input'
+import { LoginInput } from './inputs/login.input'
+import { RegisterInput } from './inputs/register.input'
 import { AuthPayload } from './models/auth.payload'
 
 @Injectable()

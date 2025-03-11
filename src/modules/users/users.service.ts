@@ -1,7 +1,7 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
 import { Injectable } from '@nestjs/common'
 import { hash, verify } from 'argon2'
-import { UpdateUserInput } from './dto/update-user.input'
+import { UpdateUserInput } from './inputs/update-user.input'
 
 @Injectable()
 export class UsersService {

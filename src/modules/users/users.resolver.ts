@@ -3,7 +3,7 @@ import { CurrentUser } from '@/common/decorators/user.decorator'
 import { GqlAuthGuard } from '@/common/decorators/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { UpdateUserInput } from './dto/update-user.input'
+import { UpdateUserInput } from './inputs/update-user.input'
 import { User } from './models/user.model'
 import { UsersService } from './users.service'
 

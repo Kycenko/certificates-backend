@@ -1,7 +1,7 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { AuthService } from './auth.service'
-import { LoginInput } from './dto/login.input'
-import { RegisterInput } from './dto/register.input'
+import { LoginInput } from './inputs/login.input'
+import { RegisterInput } from './inputs/register.input'
 import { AuthPayload } from './models/auth.payload'
 
 @Resolver()
