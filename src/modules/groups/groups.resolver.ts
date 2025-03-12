@@ -1,7 +1,7 @@
-import { Resolver } from '@nestjs/graphql';
-import { GroupsService } from './groups.service';
+import { Resolver } from '@nestjs/graphql'
+import { GroupsService } from './groups.service'
 
 @Resolver()
 export class GroupsResolver {
-  constructor(private readonly groupsService: GroupsService) {}
+	constructor(private readonly groupsService: GroupsService) {}
 }

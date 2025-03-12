@@ -1,5 +1,9 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
-import { Injectable } from '@nestjs/common'
+import {
+	ConflictException,
+	Injectable,
+	UnauthorizedException
+} from '@nestjs/common'
 import { hash, verify } from 'argon2'
 import { UpdateUserInput } from './inputs/update-user.input'
 
@@ -7,32 +11,32 @@ import { UpdateUserInput } from './inputs/update-user.input'
 export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async getUserById(id: string) {
+	async getById(id: string) {
 		const user = await this.prisma.user.findUnique({
 			where: { id }
 		})
 
-		if (!user) throw new Error('User not found')
+		if (!user) throw new ConflictException('User not found')
 
 		return user
 	}
 
-	async getUserByLogin(login: string) {
+	async getByLogin(login: string) {
 		const user = await this.prisma.user.findUnique({
 			where: { login }
 		})
 
-		if (!user) throw new Error('User not found')
+		if (!user) throw new ConflictException('User not found')
 
 		return user
 	}
 
 	async changePassword(id: string, oldPassword: string, newPassword: string) {
-		const user = await this.getUserById(id)
+		const user = await this.getById(id)
 
 		const isValidPassword = await verify(user.password, oldPassword)
 
-		if (!isValidPassword) throw new Error('Invalid password')
+		if (!isValidPassword) throw new UnauthorizedException('Invalid password')
 
 		return this.prisma.user.update({
 			where: { id: user.id },
@@ -40,8 +44,8 @@ export class UsersService {
 		})
 	}
 
-	async updateUser(id: string, data: UpdateUserInput) {
-		const user = await this.getUserById(id)
+	async update(id: string, data: UpdateUserInput) {
+		const user = await this.getById(id)
 
 		return this.prisma.user.update({
 			where: { id },

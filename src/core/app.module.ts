@@ -1,6 +1,6 @@
-import { AppResolver } from '@/app.resolver'
-
 import { AuthModule } from '@/modules/auth/auth.module'
+import { DepartmentsModule } from '@/modules/departments/departments.module'
+import { GroupsModule } from '@/modules/groups/groups.module'
 import { UsersModule } from '@/modules/users/users.module'
 import { IS_DEV_ENV } from '@/shared/utils/is-dev'
 import { ApolloDriver } from '@nestjs/apollo'
@@ -21,8 +21,9 @@ import { PrismaModule } from './prisma/prisma.module'
 		}),
 		AuthModule,
 		UsersModule,
+		DepartmentsModule,
+		GroupsModule,
 		PrismaModule
-	],
-	providers: [AppResolver]
+	]
 })
 export class AppModule {}

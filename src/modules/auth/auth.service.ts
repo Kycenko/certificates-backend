@@ -1,15 +1,12 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
-import {
-	ConflictException,
-	Injectable,
-	UnauthorizedException
-} from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
+import { User } from '@prisma/client'
 import { hash, verify } from 'argon2'
 import { UsersService } from '../users/users.service'
 import { LoginInput } from './inputs/login.input'
 import { RegisterInput } from './inputs/register.input'
-import { AuthPayload } from './models/auth.payload'
+import { AuthModel } from './models/auth.model'
 
 @Injectable()
 export class AuthService {
@@ -19,8 +16,8 @@ export class AuthService {
 		private readonly jwt: JwtService
 	) {}
 
-	async login(dto: LoginInput): Promise<AuthPayload> {
-		const user = await this.usersService.getUserByLogin(dto.login)
+	async login(dto: LoginInput): Promise<AuthModel> {
+		const user = await this.usersService.getByLogin(dto.login)
 		if (!user) throw new UnauthorizedException('User not found')
 
 		await this.verifyPassword(dto.password, user.password)
@@ -29,26 +26,26 @@ export class AuthService {
 		await this.updateRefreshToken(user.id, tokens.refreshToken)
 		await this.updateLastLogin(user.id)
 
-		return this.buildAuthPayload(user, tokens)
+		return this.buildAuthModel(user, tokens)
 	}
 
-	async register(dto: RegisterInput): Promise<AuthPayload> {
-		const existingUser = await this.usersService.getUserByLogin(dto.login)
-		if (existingUser) throw new ConflictException('User already exists')
-
-		const hashedPassword = await hash(dto.password)
+	async register(dto: RegisterInput): Promise<AuthModel> {
 		const newUser = await this.prisma.user.create({
-			data: { login: dto.login, password: hashedPassword, isAdmin: false }
+			data: {
+				login: dto.login,
+				password: await hash(dto.password),
+				isAdmin: false
+			}
 		})
 
 		const tokens = await this.issueTokens(newUser.id)
 		await this.updateRefreshToken(newUser.id, tokens.refreshToken)
 
-		return this.buildAuthPayload(newUser, tokens)
+		return this.buildAuthModel(newUser, tokens)
 	}
 
 	async getNewTokens(id: string, refreshToken: string) {
-		const user = await this.usersService.getUserById(id)
+		const user = await this.usersService.getById(id)
 		if (
 			!user ||
 			!user.refreshToken ||
@@ -64,6 +61,8 @@ export class AuthService {
 
 	async logout(id: string) {
 		await this.updateRefreshToken(id, null)
+
+		return true
 	}
 
 	private async issueTokens(id: string) {
@@ -93,7 +92,10 @@ export class AuthService {
 			throw new UnauthorizedException('Invalid password')
 	}
 
-	private buildAuthPayload(user: any, tokens: any): AuthPayload {
+	private buildAuthModel(
+		user: User,
+		tokens: { accessToken: string; refreshToken: string }
+	): AuthModel {
 		return {
 			accessToken: tokens.accessToken,
 			refreshToken: tokens.refreshToken,

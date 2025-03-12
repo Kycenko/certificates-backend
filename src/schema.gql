@@ -2,10 +2,18 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type AuthPayload {
+type AuthModel {
   accessToken: String!
   refreshToken: String!
-  user: User!
+  user: UserModel!
+}
+
+input DepartmentInput {
+  title: String!
+}
+
+type DepartmentModel {
+  title: String!
 }
 
 input LoginInput {
@@ -14,18 +22,23 @@ input LoginInput {
 }
 
 type Mutation {
-  changePassword(id: String!, newPassword: String!, oldPassword: String!): User!
-  getNewTokens(refreshToken: String!, userId: String!): AuthPayload!
-  login(loginInput: LoginInput!): AuthPayload!
-  logout(id: String!): String!
-  register(registerInput: RegisterInput!): AuthPayload!
-  updateUser(data: UpdateUserInput!, id: String!): User!
+  changePassword(id: String!, newPassword: String!, oldPassword: String!): UserModel!
+  createDepartment(data: DepartmentInput!): Boolean!
+  getNewTokens(refreshToken: String!, userId: String!): AuthModel!
+  login(data: LoginInput!): AuthModel!
+  logout: Boolean!
+  register(data: RegisterInput!): AuthModel!
+  removeDepartment(id: String!): Boolean!
+  updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
+  updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
-  getUserByLogin(login: String!): User!
-  hello: String!
-  me: User!
+  getAllDepartments(orderBy: String!, title: String): [DepartmentModel!]!
+  getDepartmentById(id: String!): DepartmentModel!
+  getDepartmentByTitle(title: String!): DepartmentModel!
+  getProfile: UserModel!
+  getUserByLogin(login: String!): UserModel!
 }
 
 input RegisterInput {
@@ -40,7 +53,7 @@ input UpdateUserInput {
   password: String
 }
 
-type User {
+type UserModel {
   id: ID!
   isAdmin: Boolean!
   login: String!

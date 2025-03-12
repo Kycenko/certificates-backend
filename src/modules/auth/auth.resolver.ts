@@ -1,29 +1,34 @@
+import { CurrentUser } from '@/common/decorators/user.decorator'
+import { GqlAuthGuard } from '@/common/guards/gql-auth.guard'
+import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
+import { User } from '@prisma/client'
 import { AuthService } from './auth.service'
 import { LoginInput } from './inputs/login.input'
 import { RegisterInput } from './inputs/register.input'
-import { AuthPayload } from './models/auth.payload'
+import { AuthModel } from './models/auth.model'
 
 @Resolver()
 export class AuthResolver {
 	constructor(private readonly authService: AuthService) {}
 
-	@Mutation(() => AuthPayload)
-	async login(@Args('loginInput') loginInput: LoginInput) {
-		return this.authService.login(loginInput)
+	@Mutation(() => AuthModel)
+	async login(@Args('data') data: LoginInput) {
+		return this.authService.login(data)
 	}
 
-	@Mutation(() => AuthPayload)
-	async register(@Args('registerInput') registerInput: RegisterInput) {
-		return this.authService.register(registerInput)
+	@Mutation(() => AuthModel)
+	async register(@Args('data') data: RegisterInput) {
+		return this.authService.register(data)
 	}
 
-	@Mutation(() => String)
-	async logout(@Args('id') id: string) {
-		return this.authService.logout(id)
+	@Mutation(() => Boolean)
+	@UseGuards(GqlAuthGuard)
+	async logout(@CurrentUser() user: User) {
+		return this.authService.logout(user.id)
 	}
 
-	@Mutation(() => AuthPayload)
+	@Mutation(() => AuthModel)
 	async getNewTokens(
 		@Args('userId') userId: string,
 		@Args('refreshToken') refreshToken: string

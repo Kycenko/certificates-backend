@@ -24,9 +24,38 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  // groupId  Int?    @map("group_id")
-  // group    Group?  @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  // groupId String? @map("group_id")
+  // Group   Group?  @relation(fields: [groupId], references: [id])
 
   @@index([login])
   @@map("users")
+}
+
+model Department {
+  id    String @id @default(uuid())
+  title String @unique
+  // courses Course[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([title])
+  @@map("departments")
+}
+
+model Group {
+  id String @id @default(uuid())
+
+  title String @unique
+  // courseId       Int?             @map("course_id")
+  // course         Course?          @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  // StudentHistory StudentHistory[]
+  // // students       Student[]
+  // User  User[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([title])
+  @@map("groups")
 }
