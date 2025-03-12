@@ -1,4 +1,6 @@
 import { AuthRole } from '@/common/decorators/role.decorator'
+import { GqlAuthGuard } from '@/common/guards/gql-auth.guard'
+import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { DepartmentsService } from './departments.service'
 import { DepartmentInput } from './inputs/department.input'
@@ -8,7 +10,8 @@ import { DepartmentModel } from './models/department.model'
 export class DepartmentsResolver {
 	constructor(private readonly departmentsService: DepartmentsService) {}
 
-	@Mutation(() => Boolean, { name: 'createDepartment' })
+	@Mutation(() => DepartmentModel, { name: 'createDepartment' })
+	@UseGuards(GqlAuthGuard)
 	@AuthRole('admin')
 	async create(@Args('data') data: DepartmentInput) {
 		return this.departmentsService.create(data)

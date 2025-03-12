@@ -12,6 +12,6 @@ export function getGraphqlConfig(
 		plugins: [ApolloServerPluginLandingPageLocalDefault()],
 		autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
 		sortSchema: true,
-		context: ({ req, res }) => ({ req, res })
+		context: ({ req }) => ({ req })
 	}
 }

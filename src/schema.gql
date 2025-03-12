@@ -23,7 +23,7 @@ input LoginInput {
 
 type Mutation {
   changePassword(id: String!, newPassword: String!, oldPassword: String!): UserModel!
-  createDepartment(data: DepartmentInput!): Boolean!
+  createDepartment(data: DepartmentInput!): DepartmentModel!
   getNewTokens(refreshToken: String!, userId: String!): AuthModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!

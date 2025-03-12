@@ -3,6 +3,7 @@ import { DepartmentsModule } from '@/modules/departments/departments.module'
 import { GroupsModule } from '@/modules/groups/groups.module'
 import { UsersModule } from '@/modules/users/users.module'
 import { IS_DEV_ENV } from '@/shared/utils/is-dev'
+import { RedisModule } from '@nestjs-modules/ioredis'
 import { ApolloDriver } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
@@ -19,11 +20,12 @@ import { PrismaModule } from './prisma/prisma.module'
 			imports: [ConfigModule],
 			inject: [ConfigService]
 		}),
+		PrismaModule,
+		RedisModule,
 		AuthModule,
 		UsersModule,
 		DepartmentsModule,
-		GroupsModule,
-		PrismaModule
+		GroupsModule
 	]
 })
 export class AppModule {}

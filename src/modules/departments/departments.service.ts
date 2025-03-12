@@ -1,27 +1,44 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
+import { RedisService } from '@/core/redis/redis.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { DepartmentInput } from './inputs/department.input'
 
 @Injectable()
 export class DepartmentsService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly redis: RedisService
+	) {}
 
 	async create(input: DepartmentInput) {
-		const existedDepartment = await this.getByTitle(input.title)
+		const existingDepartment = await this.prisma.department.findUnique({
+			where: { title: input.title }
+		})
 
-		if (existedDepartment)
-			throw new ConflictException('Department already exists')
+		if (existingDepartment)
+			throw new ConflictException('Department with this title already exists')
 
-		return this.prisma.department.create({ data: { title: input.title } })
+		// Создаем новый отдел
+		return this.prisma.department.create({
+			data: { title: input.title }
+		})
 	}
 
 	async getAll(title?: string, orderBy: 'asc' | 'desc' = 'asc') {
-		return this.prisma.department.findMany({
+		const data = await this.redis.get('departments')
+
+		if (data) return JSON.parse(data)
+
+		const departments = await this.prisma.department.findMany({
 			where: { title: { contains: title, mode: 'insensitive' } },
 			orderBy: {
 				title: orderBy
 			}
 		})
+
+		await this.redis.set('departments', JSON.stringify(departments))
+
+		return departments
 	}
 
 	async getById(id: string) {
@@ -29,7 +46,7 @@ export class DepartmentsService {
 			where: { id }
 		})
 
-		if (!department) throw new ConflictException('Department not found')
+		if (!department) throw new ConflictException('Department not found!')
 
 		return department
 	}
@@ -39,7 +56,7 @@ export class DepartmentsService {
 			where: { title }
 		})
 
-		if (!department) throw new ConflictException('Department not found')
+		if (!department) throw new ConflictException('Department not found!')
 
 		return department
 	}
