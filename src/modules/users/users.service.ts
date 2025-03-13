@@ -34,13 +34,13 @@ export class UsersService {
 	async changePassword(id: string, oldPassword: string, newPassword: string) {
 		const user = await this.getById(id)
 
-		const isValidPassword = await verify(user.password, oldPassword)
+		const isValidPassword = await verify(user.passwordHash, oldPassword)
 
 		if (!isValidPassword) throw new UnauthorizedException('Invalid password')
 
 		return this.prisma.user.update({
 			where: { id: user.id },
-			data: { password: await hash(newPassword) }
+			data: { passwordHash: await hash(newPassword) }
 		})
 	}
 
@@ -51,9 +51,21 @@ export class UsersService {
 			where: { id },
 			data: {
 				login: data.login,
-				password: data.password ? await hash(data.password) : user.password,
+				passwordHash: data.password
+					? await hash(data.password)
+					: user.passwordHash,
 				isAdmin: data.isAdmin
 			}
 		})
+	}
+
+	async remove(id: string) {
+		await this.getById(id)
+
+		await this.prisma.user.delete({
+			where: { id }
+		})
+
+		return true
 	}
 }

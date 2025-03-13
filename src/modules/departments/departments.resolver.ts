@@ -1,9 +1,8 @@
-import { AuthRole } from '@/common/decorators/role.decorator'
-import { GqlAuthGuard } from '@/common/guards/gql-auth.guard'
-import { UseGuards } from '@nestjs/common'
+import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { DepartmentsService } from './departments.service'
 import { DepartmentInput } from './inputs/department.input'
+import { DepartmentParamsInput } from './inputs/department.params.input'
 import { DepartmentModel } from './models/department.model'
 
 @Resolver()
@@ -11,7 +10,6 @@ export class DepartmentsResolver {
 	constructor(private readonly departmentsService: DepartmentsService) {}
 
 	@Mutation(() => DepartmentModel, { name: 'createDepartment' })
-	@UseGuards(GqlAuthGuard)
 	@AuthRole('admin')
 	async create(@Args('data') data: DepartmentInput) {
 		return this.departmentsService.create(data)
@@ -19,11 +17,8 @@ export class DepartmentsResolver {
 
 	@Query(() => [DepartmentModel], { name: 'getAllDepartments' })
 	@AuthRole('admin')
-	async getAll(
-		@Args('title', { nullable: true }) title?: string,
-		@Args('orderBy') orderBy: 'asc' | 'desc' = 'asc'
-	) {
-		return this.departmentsService.getAll(title, orderBy)
+	async getAll(@Args('params') params: DepartmentParamsInput) {
+		return this.departmentsService.getAll({ params })
 	}
 
 	@Query(() => DepartmentModel, { name: 'getDepartmentById' })

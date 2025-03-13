@@ -1,5 +1,5 @@
-import { getJwtConfig } from '@/common/config/jwt.config'
-import { JwtStrategy } from '@/common/strategies/jwt.strategy'
+import { getJwtConfig } from '@/shared/config/jwt.config'
+import { JwtStrategy } from '@/shared/strategies/jwt.strategy'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'

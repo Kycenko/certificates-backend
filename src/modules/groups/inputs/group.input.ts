@@ -7,4 +7,7 @@ export class GroupInput {
 	@MinLength(3)
 	@MaxLength(20)
 	title: string
+
+	@Field(() => String, { nullable: true })
+	courseId?: string
 }

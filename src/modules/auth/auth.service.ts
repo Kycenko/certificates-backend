@@ -20,7 +20,7 @@ export class AuthService {
 		const user = await this.usersService.getByLogin(dto.login)
 		if (!user) throw new UnauthorizedException('User not found')
 
-		await this.verifyPassword(dto.password, user.password)
+		await this.verifyPassword(dto.password, user.passwordHash)
 
 		const tokens = await this.issueTokens(user.id)
 		await this.updateRefreshToken(user.id, tokens.refreshToken)
@@ -30,11 +30,17 @@ export class AuthService {
 	}
 
 	async register(dto: RegisterInput): Promise<AuthModel> {
+		const ExistedUser = await this.prisma.user.findUnique({
+			where: { login: dto.login }
+		})
+
+		if (ExistedUser) throw new UnauthorizedException('User already exists')
+
 		const newUser = await this.prisma.user.create({
 			data: {
 				login: dto.login,
-				password: await hash(dto.password),
-				isAdmin: false
+				passwordHash: await hash(dto.password),
+				isAdmin: dto.isAdmin
 			}
 		})
 

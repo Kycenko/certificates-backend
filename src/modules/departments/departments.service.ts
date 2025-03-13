@@ -1,49 +1,37 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
-import { RedisService } from '@/core/redis/redis.service'
+import { BaseService } from '@/shared/base/base.service'
+import { DepartmentParams } from '@/shared/types/params.types'
 import { ConflictException, Injectable } from '@nestjs/common'
+import { Department } from '@prisma/client'
 import { DepartmentInput } from './inputs/department.input'
 
 @Injectable()
-export class DepartmentsService {
-	constructor(
-		private readonly prisma: PrismaService,
-		private readonly redis: RedisService
-	) {}
-
-	async create(input: DepartmentInput) {
-		const existingDepartment = await this.prisma.department.findUnique({
-			where: { title: input.title }
-		})
-
-		if (existingDepartment)
-			throw new ConflictException('Department with this title already exists')
-
-		// Создаем новый отдел
-		return this.prisma.department.create({
-			data: { title: input.title }
-		})
+export class DepartmentsService extends BaseService<
+	Department,
+	DepartmentInput
+> {
+	constructor(private readonly prisma: PrismaService) {
+		super(prisma, 'Department')
 	}
 
-	async getAll(title?: string, orderBy: 'asc' | 'desc' = 'asc') {
-		const data = await this.redis.get('departments')
-
-		if (data) return JSON.parse(data)
-
-		const departments = await this.prisma.department.findMany({
-			where: { title: { contains: title, mode: 'insensitive' } },
+	async getAll({ params }: { params: DepartmentParams }) {
+		return await this.prisma.department.findMany({
+			where: { title: { contains: params.title, mode: 'insensitive' } },
 			orderBy: {
-				title: orderBy
+				title: params.orderBy
+			},
+			include: {
+				courses: true
 			}
 		})
-
-		await this.redis.set('departments', JSON.stringify(departments))
-
-		return departments
 	}
 
 	async getById(id: string) {
 		const department = await this.prisma.department.findUnique({
-			where: { id }
+			where: { id },
+			include: {
+				courses: true
+			}
 		})
 
 		if (!department) throw new ConflictException('Department not found!')
@@ -53,24 +41,14 @@ export class DepartmentsService {
 
 	async getByTitle(title: string) {
 		const department = await this.prisma.department.findUnique({
-			where: { title }
+			where: { title },
+			include: {
+				courses: true
+			}
 		})
 
 		if (!department) throw new ConflictException('Department not found!')
 
 		return department
-	}
-
-	async update(id: string, input: DepartmentInput) {
-		await this.getByTitle(input.title)
-
-		return this.prisma.department.update({
-			where: { id },
-			data: { title: input.title }
-		})
-	}
-
-	async remove(id: string) {
-		return this.prisma.department.delete({ where: { id } })
 	}
 }

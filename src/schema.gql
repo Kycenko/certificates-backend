@@ -8,11 +8,39 @@ type AuthModel {
   user: UserModel!
 }
 
+input CourseInput {
+  departmentId: String!
+  number: Float!
+}
+
+type CourseModel {
+  department: DepartmentModel!
+  departmentId: String!
+  groups: [GroupModel!]
+  number: Float!
+}
+
 input DepartmentInput {
   title: String!
 }
 
 type DepartmentModel {
+  courses: [CourseModel!]
+  title: String!
+}
+
+input DepartmentParamsInput {
+  orderBy: String! = "asc"
+  title: String
+}
+
+input GroupInput {
+  courseId: String
+  title: String!
+}
+
+type GroupModel {
+  courseId: String
   title: String!
 }
 
@@ -23,20 +51,32 @@ input LoginInput {
 
 type Mutation {
   changePassword(id: String!, newPassword: String!, oldPassword: String!): UserModel!
+  createCourse(data: CourseInput!): CourseModel!
   createDepartment(data: DepartmentInput!): DepartmentModel!
+  createGroup(data: GroupInput!): GroupModel!
   getNewTokens(refreshToken: String!, userId: String!): AuthModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
   register(data: RegisterInput!): AuthModel!
+  removeCourse(id: String!): Boolean!
   removeDepartment(id: String!): Boolean!
+  removeGroup(id: String!): Boolean!
+  removeUser(id: String!): Boolean!
+  updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
   updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
+  updateGroup(data: GroupInput!, id: String!): GroupModel!
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
 type Query {
-  getAllDepartments(orderBy: String!, title: String): [DepartmentModel!]!
+  getAllCourses: [CourseModel!]!
+  getAllDepartments(params: DepartmentParamsInput!): [DepartmentModel!]!
+  getAllGroups(orderBy: String!, title: String): [GroupModel!]!
+  getCourseById(id: String!): CourseModel!
   getDepartmentById(id: String!): DepartmentModel!
   getDepartmentByTitle(title: String!): DepartmentModel!
+  getGroupById(id: String!): GroupModel!
+  getGroupByTitle(title: String!): GroupModel!
   getProfile: UserModel!
   getUserByLogin(login: String!): UserModel!
 }
@@ -45,6 +85,11 @@ input RegisterInput {
   isAdmin: Boolean!
   login: String!
   password: String!
+}
+
+input UpdateCourseInput {
+  departmentId: String
+  number: Float
 }
 
 input UpdateUserInput {

@@ -4,4 +4,7 @@ import { Field, ObjectType } from '@nestjs/graphql'
 export class GroupModel {
 	@Field(() => String)
 	title: string
+
+	@Field(() => String, { nullable: true })
+	courseId?: string
 }
