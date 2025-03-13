@@ -2,6 +2,7 @@ import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { CoursesService } from './courses.service'
 import { CourseInput } from './inputs/course.input'
+import { CourseParamsInput } from './inputs/course.params.input'
 import { UpdateCourseInput } from './inputs/update-course.input'
 import { CourseModel } from './models/course.model'
 
@@ -17,8 +18,8 @@ export class CoursesResolver {
 
 	@Query(() => [CourseModel], { name: 'getAllCourses' })
 	@AuthRole('admin')
-	async getAll() {
-		return this.coursesService.getAll()
+	async getAll(@Args('params') params: CourseParamsInput) {
+		return this.coursesService.getAll({ params })
 	}
 
 	@Query(() => CourseModel, { name: 'getCourseById' })

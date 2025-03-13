@@ -2,6 +2,7 @@ import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GroupsService } from './groups.service'
 import { GroupInput } from './inputs/group.input'
+import { GroupParamsInput } from './inputs/group.params.input'
 import { GroupModel } from './models/group.model'
 
 @Resolver()
@@ -16,11 +17,8 @@ export class GroupsResolver {
 
 	@Query(() => [GroupModel], { name: 'getAllGroups' })
 	@AuthRole('admin')
-	async getAll(
-		@Args('title', { nullable: true }) title?: string,
-		@Args('orderBy') orderBy: 'asc' | 'desc' = 'asc'
-	) {
-		return this.groupsService.getAll(title, orderBy)
+	async getAll(@Args('params') params: GroupParamsInput) {
+		return this.groupsService.getAll({ params })
 	}
 
 	@Query(() => GroupModel, { name: 'getGroupById' })

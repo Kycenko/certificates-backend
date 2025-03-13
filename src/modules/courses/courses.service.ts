@@ -3,6 +3,7 @@ import { BaseService } from '@/shared/base/base.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Course } from '@prisma/client'
 import { CourseInput } from './inputs/course.input'
+import { CourseParamsInput } from './inputs/course.params.input'
 import { UpdateCourseInput } from './inputs/update-course.input'
 
 @Injectable()
@@ -15,8 +16,16 @@ export class CoursesService extends BaseService<
 		super(prisma, 'Course')
 	}
 
-	async getAll() {
+	async getAll({ params }: { params: CourseParamsInput }) {
 		const courses = await this.prisma.course.findMany({
+			where: {
+				department: {
+					title: { contains: params.departmentTitle, mode: 'insensitive' }
+				}
+			},
+			orderBy: {
+				number: params.orderBy
+			},
 			include: {
 				department: true,
 				groups: true

@@ -1,9 +1,9 @@
 import { Field, InputType } from '@nestjs/graphql'
 
 @InputType()
-export class CourseParamsInput {
+export class HealthGroupParamsInput {
 	@Field(() => String, { nullable: true })
-	departmentTitle?: string
+	title?: string
 
 	@Field(() => String, { defaultValue: 'asc' })
 	orderBy: 'asc' | 'desc'

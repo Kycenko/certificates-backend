@@ -14,11 +14,24 @@ input CourseInput {
 }
 
 type CourseModel {
+  createdAt: DateTime!
   department: DepartmentModel!
   departmentId: String!
   groups: [GroupModel!]
+  id: String!
   number: Float!
+  updatedAt: DateTime!
 }
+
+input CourseParamsInput {
+  departmentTitle: String
+  orderBy: String! = "asc"
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 input DepartmentInput {
   title: String!
@@ -26,7 +39,10 @@ input DepartmentInput {
 
 type DepartmentModel {
   courses: [CourseModel!]
+  createdAt: DateTime!
+  id: String!
   title: String!
+  updatedAt: DateTime!
 }
 
 input DepartmentParamsInput {
@@ -41,7 +57,33 @@ input GroupInput {
 
 type GroupModel {
   courseId: String
+  createdAt: DateTime!
+  id: String!
   title: String!
+  updatedAt: DateTime!
+}
+
+input GroupParamsInput {
+  courseNumber: Float
+  departmentTitle: String
+  orderBy: String! = "asc"
+  title: String
+}
+
+input HealthGroupInput {
+  title: String!
+}
+
+type HealthGroupModel {
+  createdAt: DateTime!
+  id: String!
+  title: String!
+  updatedAt: DateTime!
+}
+
+input HealthGroupParamsInput {
+  orderBy: String! = "asc"
+  title: String
 }
 
 input LoginInput {
@@ -54,6 +96,8 @@ type Mutation {
   createCourse(data: CourseInput!): CourseModel!
   createDepartment(data: DepartmentInput!): DepartmentModel!
   createGroup(data: GroupInput!): GroupModel!
+  createHealthGroup(data: HealthGroupInput!): HealthGroupModel!
+  createPhysicalEducation(data: PhysicalEducationInput!): PhysicalEducationModel!
   getNewTokens(refreshToken: String!, userId: String!): AuthModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
@@ -61,22 +105,48 @@ type Mutation {
   removeCourse(id: String!): Boolean!
   removeDepartment(id: String!): Boolean!
   removeGroup(id: String!): Boolean!
+  removeHealthGroup(id: String!): Boolean!
+  removePhysicalEducation(id: String!): Boolean!
   removeUser(id: String!): Boolean!
   updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
   updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
   updateGroup(data: GroupInput!, id: String!): GroupModel!
+  updateHealthGroup(data: HealthGroupInput!, id: String!): HealthGroupModel!
+  updatePhysicalEducation(data: PhysicalEducationInput!, id: String!): PhysicalEducationModel!
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
+input PhysicalEducationInput {
+  title: String!
+}
+
+type PhysicalEducationModel {
+  createdAt: DateTime!
+  id: String!
+  title: String!
+  updatedAt: DateTime!
+}
+
+input PhysicalEducationParamsInput {
+  orderBy: String! = "asc"
+  title: String
+}
+
 type Query {
-  getAllCourses: [CourseModel!]!
+  getAllCourses(params: CourseParamsInput!): [CourseModel!]!
   getAllDepartments(params: DepartmentParamsInput!): [DepartmentModel!]!
-  getAllGroups(orderBy: String!, title: String): [GroupModel!]!
+  getAllGroups(params: GroupParamsInput!): [GroupModel!]!
+  getAllHealthGroups(params: HealthGroupParamsInput!): [HealthGroupModel!]!
+  getAllPhysicalEducations(params: PhysicalEducationParamsInput!): [PhysicalEducationModel!]!
   getCourseById(id: String!): CourseModel!
   getDepartmentById(id: String!): DepartmentModel!
   getDepartmentByTitle(title: String!): DepartmentModel!
   getGroupById(id: String!): GroupModel!
   getGroupByTitle(title: String!): GroupModel!
+  getHealthGroupById(id: String!): HealthGroupModel!
+  getHealthGroupByTitle(title: String!): HealthGroupModel!
+  getPhysicalEducationById(id: String!): PhysicalEducationModel!
+  getPhysicalEducationByTitle(title: String!): PhysicalEducationModel!
   getProfile: UserModel!
   getUserByLogin(login: String!): UserModel!
 }

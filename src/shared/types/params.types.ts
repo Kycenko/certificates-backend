@@ -14,3 +14,11 @@ export type GroupParams = {
 	title?: string
 	departmentTitle?: string
 } & OrderByParams
+
+export type HealthGroupParams = {
+	title?: string
+} & OrderByParams
+
+export type PhysicalEducationParams = {
+	title?: string
+} & OrderByParams

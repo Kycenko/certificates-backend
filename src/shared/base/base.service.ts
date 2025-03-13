@@ -1,5 +1,5 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
-import { ConflictException, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 
 @Injectable()
@@ -23,20 +23,20 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 	// 	return data
 	// }
 
-	async getById(id: string): Promise<T | null> {
-		const data = await this.prismaService[this.prismaModel].findUnique({
-			where: {
-				id
-			}
-		})
+	// async getById(id: string): Promise<T | null> {
+	// 	const data = await this.prismaService[this.prismaModel].findUnique({
+	// 		where: {
+	// 			id
+	// 		}
+	// 	})
 
-		if (!data) throw new ConflictException(`${this.prismaModel} not found`)
+	// 	if (!data) throw new ConflictException(`${this.prismaModel} not found`)
 
-		return data
-	}
+	// 	return data
+	// }
 
 	async update(id: string, updateDto: UpdateInput): Promise<T> {
-		await this.getById(id)
+		// await this.getById(id)
 
 		return this.prismaService[this.prismaModel].update({
 			where: { id },
@@ -45,7 +45,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 	}
 
 	async remove(id: string): Promise<boolean> {
-		await this.getById(id)
+		// await this.getById(id)
 
 		await this.prismaService[this.prismaModel].delete({
 			where: { id }
