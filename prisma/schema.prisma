@@ -126,17 +126,17 @@ model Certificate {
 }
 
 model CertificateHistory {
-  id                   String             @id @default(uuid())
-  startDate            DateTime           @map("start_date")
-  finishDate           DateTime           @map("finish_date")
-  createdAt            DateTime           @default(now()) @map("created_at")
-  updatedAt            DateTime           @updatedAt @map("updated_at")
-  healthGroupId        String?            @map("health_group_id")
-  physicalEducationId  String?            @map("physical_education_id")
-  medicalCertificateId String             @map("medical_certificate_id")
-  healthGroup          HealthGroup?       @relation(fields: [healthGroupId], references: [id])
-  certificate          Certificate        @relation(fields: [medicalCertificateId], references: [id], onDelete: Cascade)
-  physicalEducation    PhysicalEducation? @relation(fields: [physicalEducationId], references: [id], onDelete: Cascade)
+  id                  String             @id @default(uuid())
+  startDate           DateTime           @map("start_date")
+  finishDate          DateTime           @map("finish_date")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  healthGroupId       String?            @map("health_group_id")
+  physicalEducationId String?            @map("physical_education_id")
+  certificateId       String             @map("certificate_id")
+  healthGroup         HealthGroup?       @relation(fields: [healthGroupId], references: [id])
+  certificate         Certificate        @relation(fields: [certificateId], references: [id], onDelete: Cascade)
+  physicalEducation   PhysicalEducation? @relation(fields: [physicalEducationId], references: [id], onDelete: Cascade)
 
   @@map("certificate_histories")
 }

@@ -3,6 +3,7 @@ import { BaseService } from '@/shared/base/base.service'
 import { StudentParams } from '@/shared/types/params.types'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Student } from '@prisma/client'
+import { StudentHistoriesService } from '../student-histories/student-histories.service'
 import { StudentInput } from './inputs/student.input'
 import { UpdateStudentInput } from './inputs/update-student.input'
 
@@ -12,7 +13,10 @@ export class StudentsService extends BaseService<
 	StudentInput,
 	UpdateStudentInput
 > {
-	constructor(private readonly prisma: PrismaService) {
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly histories: StudentHistoriesService
+	) {
 		super(prisma, 'Student')
 	}
 
@@ -29,20 +33,20 @@ export class StudentsService extends BaseService<
 		} = params
 		const skipCount = (page - 1) * limit
 
-		const totalStudents = await this.prisma.student.count({
-			where: {
-				lastName: lastName
-					? { contains: lastName, mode: 'insensitive' }
-					: undefined,
-				group: {
-					title: groupTitle
-						? { contains: groupTitle, mode: 'insensitive' }
-						: undefined
-				},
+		// const totalStudents = await this.prisma.student.count({
+		// 	where: {
+		// 		lastName: lastName
+		// 			? { contains: lastName, mode: 'insensitive' }
+		// 			: undefined,
+		// 		group: {
+		// 			title: groupTitle
+		// 				? { contains: groupTitle, mode: 'insensitive' }
+		// 				: undefined
+		// 		},
 
-				isExpelled: isExpelled ?? undefined
-			}
-		})
+		// 		isExpelled: isExpelled ?? undefined
+		// 	}
+		// })
 
 		const students = await this.prisma.student.findMany({
 			orderBy: { lastName: orderBy },
@@ -84,5 +88,23 @@ export class StudentsService extends BaseService<
 		if (!student) throw new ConflictException('Student not found!')
 
 		return student
+	}
+
+	async update(id: string, data: UpdateStudentInput) {
+		const student = await this.prisma.student.findUnique({ where: { id } })
+
+		if (!student) throw new ConflictException('Student not found!')
+
+		const updated = await this.prisma.student.update({
+			where: { id },
+			data
+		})
+
+		await this.histories.create({
+			studentId: id,
+			groupId: data.groupId
+		})
+
+		return updated
 	}
 }

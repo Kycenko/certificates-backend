@@ -8,6 +8,58 @@ type AuthModel {
   user: UserModel!
 }
 
+input CertificateHistoryInput {
+  certificateId: String!
+  finishDate: DateTime!
+  healthGroupId: String
+  physicalEducationId: String
+  startDate: DateTime!
+}
+
+type CertificateHistoryModel {
+  certificate: CertificateModel!
+  certificateId: String!
+  createdAt: DateTime!
+  finishDate: DateTime!
+  healthGroup: HealthGroupModel
+  healthGroupId: String
+  id: String!
+  physicalEducation: PhysicalEducationModel
+  physicalEducationId: String!
+  startDate: DateTime!
+  updatedAt: DateTime!
+}
+
+input CertificateInput {
+  finishDate: DateTime!
+  healthGroupId: String!
+  physicalEducationId: String!
+  startDate: DateTime!
+  studentId: String!
+}
+
+type CertificateModel {
+  finishDate: DateTime!
+  healthGroup: HealthGroupModel!
+  healthGroupId: String!
+  physicalEducation: PhysicalEducationModel!
+  physicalEducationId: String!
+  startDate: DateTime!
+  student: StudentModel!
+  studentId: String!
+}
+
+input CertificateParamsInput {
+  courseNumber: Float
+  departmentTitle: String
+  finishDate: DateTime
+  groupTitle: String
+  limit: Float! = 25
+  orderBy: String! = "asc"
+  page: Float! = 1
+  startDate: DateTime
+}
+
 input CourseInput {
   departmentId: String!
   number: Float!
@@ -56,6 +108,7 @@ input GroupInput {
 }
 
 type GroupModel {
+  course: CourseModel
   courseId: String
   createdAt: DateTime!
   id: String!
@@ -93,16 +146,20 @@ input LoginInput {
 
 type Mutation {
   changePassword(id: String!, newPassword: String!, oldPassword: String!): UserModel!
+  createCertificate(data: CertificateInput!): CertificateModel!
+  createCertificateHistory(data: CertificateHistoryInput!): CertificateHistoryModel!
   createCourse(data: CourseInput!): CourseModel!
   createDepartment(data: DepartmentInput!): DepartmentModel!
   createGroup(data: GroupInput!): GroupModel!
   createHealthGroup(data: HealthGroupInput!): HealthGroupModel!
   createPhysicalEducation(data: PhysicalEducationInput!): PhysicalEducationModel!
   createStudent(data: StudentInput!): StudentModel!
+  createStudentHistory(data: StudentHistoryInput!): StudentHistoryModel!
   getNewTokens(refreshToken: String!, userId: String!): AuthModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
   register(data: RegisterInput!): AuthModel!
+  removeCertificate(id: String!): Boolean!
   removeCourse(id: String!): Boolean!
   removeDepartment(id: String!): Boolean!
   removeGroup(id: String!): Boolean!
@@ -110,6 +167,7 @@ type Mutation {
   removePhysicalEducation(id: String!): Boolean!
   removeStudent(id: String!): Boolean!
   removeUser(id: String!): Boolean!
+  updateCertificate(data: UpdateCertificateInput!, id: String!): CertificateModel!
   updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
   updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
   updateGroup(data: GroupInput!, id: String!): GroupModel!
@@ -136,12 +194,16 @@ input PhysicalEducationParamsInput {
 }
 
 type Query {
+  getAllCertificateHistories(certificateId: String!): [CertificateHistoryModel!]!
+  getAllCertificates(params: CertificateParamsInput!): [CertificateModel!]!
   getAllCourses(params: CourseParamsInput!): [CourseModel!]!
   getAllDepartments(params: DepartmentParamsInput!): [DepartmentModel!]!
   getAllGroups(params: GroupParamsInput!): [GroupModel!]!
   getAllHealthGroups(params: HealthGroupParamsInput!): [HealthGroupModel!]!
   getAllPhysicalEducations(params: PhysicalEducationParamsInput!): [PhysicalEducationModel!]!
+  getAllStudentHistories(studentId: String!): [StudentHistoryModel!]!
   getAllStudents(params: StudentParamsInput!): [StudentModel!]!
+  getCertificateById(id: String!): CertificateModel!
   getCourseById(id: String!): CourseModel!
   getDepartmentById(id: String!): DepartmentModel!
   getDepartmentByTitle(title: String!): DepartmentModel!
@@ -162,6 +224,21 @@ input RegisterInput {
   password: String!
 }
 
+input StudentHistoryInput {
+  groupId: String
+  studentId: String!
+}
+
+type StudentHistoryModel {
+  createdAt: DateTime!
+  group: GroupModel
+  groupId: String
+  id: String!
+  student: GroupModel!
+  studentId: String!
+  updatedAt: DateTime!
+}
+
 input StudentInput {
   birthDate: DateTime!
   firstName: String!
@@ -173,14 +250,16 @@ input StudentInput {
 
 type StudentModel {
   birthDate: DateTime!
+  certificates: [CertificateModel!]
   createdAt: DateTime!
   firstName: String!
-  group: GroupModel!
+  group: GroupModel
   groupId: String
   id: String!
   isExpelled: Boolean!
   lastName: String!
   secondName: String
+  studentHistories: [StudentHistoryModel!]
   updatedAt: DateTime!
 }
 
@@ -194,6 +273,14 @@ input StudentParamsInput {
   limit: Float! = 25
   orderBy: String! = "asc"
   page: Float! = 1
+}
+
+input UpdateCertificateInput {
+  finishDate: DateTime
+  healthGroupId: String
+  physicalEducationId: String
+  startDate: DateTime
+  studentId: String
 }
 
 input UpdateCourseInput {

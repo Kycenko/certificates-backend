@@ -13,7 +13,8 @@
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "node dist/main",
 		"lint": "eslint \"src/**/*.ts\" --fix",
-		"prepare": "husky"
+		"prepare": "husky",
+		"prisma:seed": "ts-node prisma/seed.ts"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.11.3",

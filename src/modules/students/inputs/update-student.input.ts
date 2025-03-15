@@ -1,16 +1,19 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { MinLength } from 'class-validator'
+import { IsOptional, MinLength } from 'class-validator'
 
 @InputType()
 export class UpdateStudentInput {
 	@Field(() => String, { nullable: true })
-	@MinLength(6)
+	@MinLength(3)
+	@IsOptional()
 	firstName?: string
 	@Field(() => String, { nullable: true })
 	@MinLength(3)
+	@IsOptional()
 	lastName?: string
 	@Field(() => String, { nullable: true })
 	@MinLength(6)
+	@IsOptional()
 	secondName?: string
 	@Field(() => Date, { nullable: true })
 	birthDate?: Date

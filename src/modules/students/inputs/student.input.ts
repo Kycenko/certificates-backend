@@ -1,5 +1,6 @@
+import { BirthDateValidator } from '@/shared/validators/birth-date.validator'
 import { Field, InputType } from '@nestjs/graphql'
-import { IsOptional, MinLength } from 'class-validator'
+import { IsOptional, MinLength, Validate } from 'class-validator'
 
 @InputType()
 export class StudentInput {
@@ -14,6 +15,7 @@ export class StudentInput {
 	@IsOptional()
 	secondName?: string
 	@Field(() => Date)
+	@Validate(BirthDateValidator)
 	birthDate: Date
 	@Field(() => String, { nullable: true })
 	@IsOptional()

@@ -36,3 +36,13 @@ export type StudentParams = {
 	isExpelled?: boolean
 } & OrderByParams &
 	PaginationParams
+
+export type CertificateParams = {
+	studentName?: string
+	departmentTitle?: string
+	courseNumber?: number
+	groupTitle?: string
+	startDate?: Date
+	finishDate?: Date
+} & OrderByParams &
+	PaginationParams

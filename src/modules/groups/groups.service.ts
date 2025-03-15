@@ -16,7 +16,9 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 	}
 
 	async getAll({ params }: { params: GroupParamsInput }) {
-		const cachedGroups = await this.redis.get('groups')
+		const cachedGroups = await this.redis.get(
+			`groups:${params.title}:${params.orderBy}`
+		)
 
 		if (cachedGroups) return JSON.parse(cachedGroups)
 

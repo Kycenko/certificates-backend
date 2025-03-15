@@ -36,4 +36,20 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 		this.logger.log(`${this.prismaModel} with ID ${id} deleted`)
 		return true
 	}
+
+	async removeMany(ids: string[]): Promise<boolean> {
+		await this.prismaService[this.prismaModel].deleteMany({
+			where: { id: { in: ids } }
+		})
+
+		this.logger.log(`${this.prismaModel} with IDs ${ids} deleted`)
+		return true
+	}
+
+	async removeAll(): Promise<boolean> {
+		await this.prismaService[this.prismaModel].deleteMany({})
+
+		this.logger.log(`${this.prismaModel} deleted`)
+		return true
+	}
 }
