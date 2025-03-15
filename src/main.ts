@@ -1,9 +1,12 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './core/app.module'
+import { CustomLogger } from './shared/utils/custom-logger'
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
+
+	app.useLogger(new CustomLogger())
 
 	app.enableCors({ credentials: true })
 

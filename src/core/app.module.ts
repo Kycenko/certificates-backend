@@ -4,6 +4,7 @@ import { DepartmentsModule } from '@/modules/departments/departments.module'
 import { GroupsModule } from '@/modules/groups/groups.module'
 import { HealthGroupsModule } from '@/modules/health-groups/health-groups.module'
 import { PhysicalEducationsModule } from '@/modules/physical-educations/physical-educations.module'
+import { StudentsModule } from '@/modules/students/students.module'
 import { UsersModule } from '@/modules/users/users.module'
 import { IS_DEV_ENV } from '@/shared/utils/is-dev'
 import { RedisModule } from '@nestjs-modules/ioredis'
@@ -31,7 +32,8 @@ import { PrismaModule } from './prisma/prisma.module'
 		GroupsModule,
 		CoursesModule,
 		HealthGroupsModule,
-		PhysicalEducationsModule
+		PhysicalEducationsModule,
+		StudentsModule
 	]
 })
 export class AppModule {}

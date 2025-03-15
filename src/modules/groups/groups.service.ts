@@ -1,4 +1,5 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
+import { RedisService } from '@/core/redis/redis.service'
 import { BaseService } from '@/shared/base/base.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Group } from '@prisma/client'
@@ -7,17 +8,28 @@ import { GroupParamsInput } from './inputs/group.params.input'
 
 @Injectable()
 export class GroupsService extends BaseService<Group, GroupInput> {
-	constructor(private readonly prisma: PrismaService) {
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly redis: RedisService
+	) {
 		super(prisma, 'Group')
 	}
 
 	async getAll({ params }: { params: GroupParamsInput }) {
-		return await this.prisma.group.findMany({
+		const cachedGroups = await this.redis.get('groups')
+
+		if (cachedGroups) return JSON.parse(cachedGroups)
+
+		const groups = await this.prisma.group.findMany({
 			where: { title: { contains: params.title, mode: 'insensitive' } },
 			orderBy: {
 				title: params.orderBy
 			}
 		})
+
+		await this.redis.set('groups', JSON.stringify(groups), 60)
+
+		return groups
 	}
 
 	async getById(id: string) {

@@ -1,5 +1,10 @@
-type OrderByParams = {
+export type OrderByParams = {
 	orderBy: 'asc' | 'desc'
+}
+
+type PaginationParams = {
+	page: number
+	limit: number
 }
 
 export type DepartmentParams = {
@@ -22,3 +27,12 @@ export type HealthGroupParams = {
 export type PhysicalEducationParams = {
 	title?: string
 } & OrderByParams
+
+export type StudentParams = {
+	lastName?: string
+	departmentTitle?: string
+	courseNumber?: number
+	groupTitle?: string
+	isExpelled?: boolean
+} & OrderByParams &
+	PaginationParams

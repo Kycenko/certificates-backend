@@ -98,6 +98,7 @@ type Mutation {
   createGroup(data: GroupInput!): GroupModel!
   createHealthGroup(data: HealthGroupInput!): HealthGroupModel!
   createPhysicalEducation(data: PhysicalEducationInput!): PhysicalEducationModel!
+  createStudent(data: StudentInput!): StudentModel!
   getNewTokens(refreshToken: String!, userId: String!): AuthModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
@@ -107,12 +108,14 @@ type Mutation {
   removeGroup(id: String!): Boolean!
   removeHealthGroup(id: String!): Boolean!
   removePhysicalEducation(id: String!): Boolean!
+  removeStudent(id: String!): Boolean!
   removeUser(id: String!): Boolean!
   updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
   updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
   updateGroup(data: GroupInput!, id: String!): GroupModel!
   updateHealthGroup(data: HealthGroupInput!, id: String!): HealthGroupModel!
   updatePhysicalEducation(data: PhysicalEducationInput!, id: String!): PhysicalEducationModel!
+  updateStudent(data: UpdateStudentInput!, id: String!): StudentModel!
   updateUser(data: UpdateUserInput!, id: String!): UserModel!
 }
 
@@ -138,6 +141,7 @@ type Query {
   getAllGroups(params: GroupParamsInput!): [GroupModel!]!
   getAllHealthGroups(params: HealthGroupParamsInput!): [HealthGroupModel!]!
   getAllPhysicalEducations(params: PhysicalEducationParamsInput!): [PhysicalEducationModel!]!
+  getAllStudents(params: StudentParamsInput!): [StudentModel!]!
   getCourseById(id: String!): CourseModel!
   getDepartmentById(id: String!): DepartmentModel!
   getDepartmentByTitle(title: String!): DepartmentModel!
@@ -148,6 +152,7 @@ type Query {
   getPhysicalEducationById(id: String!): PhysicalEducationModel!
   getPhysicalEducationByTitle(title: String!): PhysicalEducationModel!
   getProfile: UserModel!
+  getStudentById(id: String!): StudentModel!
   getUserByLogin(login: String!): UserModel!
 }
 
@@ -157,9 +162,52 @@ input RegisterInput {
   password: String!
 }
 
+input StudentInput {
+  birthDate: DateTime!
+  firstName: String!
+  groupId: String
+  isExpelled: Boolean! = false
+  lastName: String!
+  secondName: String
+}
+
+type StudentModel {
+  birthDate: DateTime!
+  createdAt: DateTime!
+  firstName: String!
+  group: GroupModel!
+  groupId: String
+  id: String!
+  isExpelled: Boolean!
+  lastName: String!
+  secondName: String
+  updatedAt: DateTime!
+}
+
+input StudentParamsInput {
+  courseNumber: Float
+  departmentTitle: String
+  groupId: String
+  groupTitle: String
+  isExpelled: Boolean = false
+  lastName: String
+  limit: Float! = 25
+  orderBy: String! = "asc"
+  page: Float! = 1
+}
+
 input UpdateCourseInput {
   departmentId: String
   number: Float
+}
+
+input UpdateStudentInput {
+  birthDate: DateTime
+  firstName: String
+  groupId: String
+  isExpelled: Boolean = false
+  lastName: String
+  secondName: String
 }
 
 input UpdateUserInput {
