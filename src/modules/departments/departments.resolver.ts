@@ -3,6 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { DepartmentsService } from './departments.service'
 import { DepartmentInput } from './inputs/department.input'
 import { DepartmentParamsInput } from './inputs/department.params.input'
+import { RemoveManyDepartmentsArgs } from './inputs/remove-departments'
 import { DepartmentModel } from './models/department.model'
 
 @Resolver()
@@ -43,5 +44,11 @@ export class DepartmentsResolver {
 	@AuthRole('admin')
 	async remove(@Args('id') id: string) {
 		return this.departmentsService.remove(id)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeManyDepartments' })
+	@AuthRole('admin')
+	async removeMany(@Args() params: RemoveManyDepartmentsArgs) {
+		return this.departmentsService.removeMany(params.ids)
 	}
 }
