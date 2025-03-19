@@ -51,8 +51,16 @@ export class StudentsService extends BaseService<
 		const students = await this.prisma.student.findMany({
 			orderBy: { lastName: orderBy },
 			include: {
-				group: true,
-				certificates: true
+				certificates: true,
+				group: {
+					include: {
+						course: {
+							include: {
+								department: true
+							}
+						}
+					}
+				}
 			},
 			where: {
 				lastName: lastName
@@ -80,7 +88,15 @@ export class StudentsService extends BaseService<
 		const student = await this.prisma.student.findUnique({
 			where: { id },
 			include: {
-				group: true,
+				group: {
+					include: {
+						course: {
+							include: {
+								department: true
+							}
+						}
+					}
+				},
 				certificates: true
 			}
 		})

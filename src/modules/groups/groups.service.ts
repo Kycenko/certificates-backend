@@ -26,6 +26,11 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 			where: { title: { contains: params.title, mode: 'insensitive' } },
 			orderBy: {
 				title: params.orderBy
+			},
+			include: {
+				course: {
+					include: { department: true }
+				}
 			}
 		})
 
@@ -36,7 +41,12 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 
 	async getById(id: string) {
 		const group = await this.prisma.group.findUnique({
-			where: { id }
+			where: { id },
+			include: {
+				course: {
+					include: { department: true }
+				}
+			}
 		})
 
 		if (!group) throw new ConflictException('Group not found!')
