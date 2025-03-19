@@ -1,5 +1,5 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
-import { Injectable } from '@nestjs/common'
+import { ConflictException, Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import { CustomLogger } from '../utils/custom-logger'
 
@@ -38,6 +38,12 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 	}
 
 	async removeMany(ids: string[]): Promise<boolean> {
+		const models = await this.prismaService[this.prismaModel].findMany({
+			where: { id: { in: ids } }
+		})
+
+		if (!models) throw new ConflictException('Ids not found')
+
 		await this.prismaService[this.prismaModel].deleteMany({
 			where: { id: { in: ids } }
 		})
