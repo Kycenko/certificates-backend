@@ -1,3 +1,4 @@
+import { RemoveManyInput } from '@/shared/base/remove-many.input'
 import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { HealthGroupsService } from './health-groups.service'
@@ -42,5 +43,11 @@ export class HealthGroupsResolver {
 	@AuthRole('admin')
 	async remove(@Args('id') id: string) {
 		return this.healthGroupsService.remove(id)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeManyHealthGroups' })
+	@AuthRole('admin')
+	async removeMany(@Args() params: RemoveManyInput) {
+		return this.healthGroupsService.removeMany(params.ids)
 	}
 }

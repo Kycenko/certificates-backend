@@ -164,7 +164,13 @@ type Mutation {
   removeDepartment(id: String!): Boolean!
   removeGroup(id: String!): Boolean!
   removeHealthGroup(id: String!): Boolean!
+  removeManyCertificates(ids: [String!]!): Boolean!
+  removeManyCourses(ids: [String!]!): Boolean!
   removeManyDepartments(ids: [String!]!): Boolean!
+  removeManyGroups(ids: [String!]!): Boolean!
+  removeManyHealthGroups(ids: [String!]!): Boolean!
+  removeManyPhysicalEducations(ids: [String!]!): Boolean!
+  removeManyStudents(ids: [String!]!): Boolean!
   removePhysicalEducation(id: String!): Boolean!
   removeStudent(id: String!): Boolean!
   removeUser(id: String!): Boolean!

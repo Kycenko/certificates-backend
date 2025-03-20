@@ -1,9 +1,9 @@
+import { RemoveManyInput } from '@/shared/base/remove-many.input'
 import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { DepartmentsService } from './departments.service'
 import { DepartmentInput } from './inputs/department.input'
 import { DepartmentParamsInput } from './inputs/department.params.input'
-import { RemoveManyDepartmentsArgs } from './inputs/remove-departments'
 import { DepartmentModel } from './models/department.model'
 
 @Resolver()
@@ -48,7 +48,7 @@ export class DepartmentsResolver {
 
 	@Mutation(() => Boolean, { name: 'removeManyDepartments' })
 	@AuthRole('admin')
-	async removeMany(@Args() params: RemoveManyDepartmentsArgs) {
+	async removeMany(@Args() params: RemoveManyInput) {
 		return this.departmentsService.removeMany(params.ids)
 	}
 }

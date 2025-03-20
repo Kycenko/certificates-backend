@@ -1,3 +1,4 @@
+import { RemoveManyInput } from '@/shared/base/remove-many.input'
 import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { PhysicalEducationInput } from './inputs/physical-education.input'
@@ -48,5 +49,11 @@ export class PhysicalEducationsResolver {
 	@AuthRole('admin')
 	async remove(@Args('id') id: string) {
 		return this.physicalEducationsService.remove(id)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeManyPhysicalEducations' })
+	@AuthRole('admin')
+	async removeMany(@Args() params: RemoveManyInput) {
+		return this.physicalEducationsService.removeMany(params.ids)
 	}
 }
