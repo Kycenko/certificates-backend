@@ -28,6 +28,7 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 				title: params.orderBy
 			},
 			include: {
+				students: true,
 				course: {
 					include: { department: true }
 				}
@@ -43,6 +44,7 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 		const group = await this.prisma.group.findUnique({
 			where: { id },
 			include: {
+				students: true,
 				course: {
 					include: { department: true }
 				}

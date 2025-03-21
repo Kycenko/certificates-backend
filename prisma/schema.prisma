@@ -40,13 +40,14 @@ model Department {
 
 model Course {
   id           String     @id @default(uuid())
-  number       Int        @unique
+  number       Int
   departmentId String     @map("department_id")
   groups       Group[]
   department   Department @relation(fields: [departmentId], references: [id])
   createdAt    DateTime   @default(now()) @map("created_at")
   updatedAt    DateTime   @updatedAt @map("updated_at")
 
+  @@unique([departmentId, number])
   @@index([departmentId])
   @@map("courses")
 }
