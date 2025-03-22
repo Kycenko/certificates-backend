@@ -39,14 +39,17 @@ input CertificateInput {
 }
 
 type CertificateModel {
+  createdAt: DateTime!
   finishDate: DateTime!
   healthGroup: HealthGroupModel!
   healthGroupId: String!
+  id: String!
   physicalEducation: PhysicalEducationModel!
   physicalEducationId: String!
   startDate: DateTime!
   student: StudentModel!
   studentId: String!
+  updatedAt: DateTime!
 }
 
 input CertificateParamsInput {
@@ -112,6 +115,7 @@ type GroupModel {
   courseId: String
   createdAt: DateTime!
   id: String!
+  students: [StudentModel!]
   title: String!
   updatedAt: DateTime!
 }

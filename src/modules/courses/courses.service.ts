@@ -2,6 +2,7 @@ import { PrismaService } from '@/core/prisma/prisma.service'
 import { BaseService } from '@/shared/base/base.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Course } from '@prisma/client'
+import { DepartmentsService } from '../departments/departments.service'
 import { CourseInput } from './inputs/course.input'
 import { CourseParamsInput } from './inputs/course.params.input'
 import { UpdateCourseInput } from './inputs/update-course.input'
@@ -12,7 +13,10 @@ export class CoursesService extends BaseService<
 	CourseInput,
 	UpdateCourseInput
 > {
-	constructor(private readonly prisma: PrismaService) {
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly departmentsService: DepartmentsService
+	) {
 		super(prisma, 'Course')
 	}
 

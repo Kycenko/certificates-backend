@@ -23,6 +23,8 @@ export class CoursesResolver {
 		return this.coursesService.getAll({ params })
 	}
 
+
+
 	@Query(() => CourseModel, { name: 'getCourseById' })
 	@AuthRole('admin')
 	async getById(@Args('id') id: string) {
