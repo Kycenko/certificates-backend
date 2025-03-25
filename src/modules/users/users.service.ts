@@ -44,19 +44,26 @@ export class UsersService {
 		})
 	}
 
-	async update(id: string, data: UpdateUserInput) {
-		const user = await this.getById(id)
+	async update(id: string, data: UpdateUserInput, password: string) {
+		try {
+			const user = await this.getById(id)
 
-		return this.prisma.user.update({
-			where: { id },
-			data: {
-				login: data.login,
-				passwordHash: data.password
-					? await hash(data.password)
-					: user.passwordHash,
-				isAdmin: data.isAdmin
-			}
-		})
+			const isPasswordValid = await verify(user.passwordHash, password)
+			if (!isPasswordValid) throw new Error('Неверный пароль')
+
+			const updatedUser = await this.prisma.user.update({
+				where: { id },
+				data: {
+					login: data.login,
+					isAdmin: data.isAdmin
+				}
+			})
+
+			return updatedUser
+		} catch (error) {
+			console.error('Ошибка при обновлении пользователя:', error)
+			throw new Error('Не удалось обновить пользователя')
+		}
 	}
 
 	async remove(id: string) {

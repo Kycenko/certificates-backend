@@ -31,8 +31,12 @@ export class UsersResolver {
 	}
 
 	@Mutation(() => UserModel, { name: 'updateUser' })
-	async update(@Args('id') id: string, @Args('data') data: UpdateUserInput) {
-		return this.usersService.update(id, data)
+	async update(
+		@Args('id') id: string,
+		@Args('data') data: UpdateUserInput,
+		@Args('password') password: string
+	) {
+		return this.usersService.update(id, data, password)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeUser' })

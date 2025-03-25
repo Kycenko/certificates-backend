@@ -8,11 +8,6 @@ export class UpdateUserInput {
 	@MaxLength(20)
 	login?: string
 
-	@Field(() => String, { nullable: true })
-	@MinLength(6)
-	@MaxLength(20)
-	password?: string
-
 	@Field(() => Boolean, { nullable: true })
 	@IsBoolean()
 	isAdmin?: boolean
