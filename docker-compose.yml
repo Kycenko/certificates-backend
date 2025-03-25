@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:latest
@@ -9,9 +11,10 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - pgdata:/var/lib/postgresql/data\
+      - pgdata:/var/lib/postgresql/data
     networks:
       - medical-certificates
+
   redis:
     image: redis:latest
     restart: always
@@ -23,9 +26,63 @@ services:
     networks:
       - medical-certificates
 
+  elasticsearch:
+    image: bitnami/elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/bitnami/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - medical-certificates
+
+  kibana:
+    image: bitnami/kibana:8.12.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - KIBANA_SERVER_HOST=0.0.0.0
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - medical-certificates
+
+  logstash:
+    image: bitnami/logstash:8.12.0
+    volumes:
+      - ./logstash.conf:/opt/bitnami/logstash/pipeline/logstash.conf
+      - ./logs:/var/log/nestjs
+    ports:
+      - 5044:5044
+    environment:
+      - LS_JAVA_OPTS=-Xmx256m -Xms256m
+    depends_on:
+      - elasticsearch
+    networks:
+      - medical-certificates
+
+  fluentbit:
+    image: fluent/fluent-bit:2.2.0
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./logs:/var/log/nestjs
+    depends_on:
+      - logstash
+    networks:
+      - medical-certificates
+
 volumes:
   pgdata:
   redis_data:
+  es_data:
 
 networks:
   medical-certificates:
