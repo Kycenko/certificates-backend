@@ -314,7 +314,9 @@ input UpdateUserInput {
 }
 
 type UserModel {
-  id: ID!
+  createdAt: DateTime!
+  id: String!
   isAdmin: Boolean!
   login: String!
+  updatedAt: DateTime!
 }

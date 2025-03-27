@@ -105,7 +105,13 @@ export class AuthService {
 		return {
 			accessToken: tokens.accessToken,
 			refreshToken: tokens.refreshToken,
-			user: { id: user.id, login: user.login, isAdmin: user.isAdmin }
+			user: {
+				id: user.id,
+				login: user.login,
+				isAdmin: user.isAdmin,
+				createdAt: user.createdAt,
+				updatedAt: user.updatedAt
+			}
 		}
 	}
 }

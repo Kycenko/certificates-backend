@@ -8,7 +8,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 	constructor(
 		protected readonly prismaService: PrismaService,
 		private readonly prismaModel: Prisma.ModelName,
-		private readonly logger: CustomLogger = new CustomLogger()
+		protected readonly logger: CustomLogger = new CustomLogger()
 	) {}
 
 	async create(createDto: CreateInput): Promise<T> {
@@ -17,10 +17,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 				data: createDto
 			})
 
-			this.logger.log(
-				`${this.prismaModel} created`,
-				JSON.stringify({ data: createDto })
-			)
+			this.logger.log(`${this.prismaModel} created`, JSON.stringify(createDto))
 			return result
 		} catch (error) {
 			this.logger.error(`Error creating ${this.prismaModel}`, error)
@@ -35,10 +32,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 				data: updateDto
 			})
 
-			this.logger.log(
-				`${this.prismaModel} updated`,
-				JSON.stringify({ data: updateDto })
-			)
+			this.logger.log(`${this.prismaModel} updated`, JSON.stringify(updateDto))
 			return result
 		} catch (error) {
 			this.logger.error(
@@ -55,7 +49,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 				where: { id }
 			})
 
-			this.logger.log(`${this.prismaModel} deleted`, JSON.stringify({ id }))
+			this.logger.log(`${this.prismaModel} deleted`, JSON.stringify(id))
 			return true
 		} catch (error) {
 			this.logger.error(
@@ -65,6 +59,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 			throw error
 		}
 	}
+
 	async removeMany(ids: string[]): Promise<boolean> {
 		try {
 			const existingCount = await this.prismaService[this.prismaModel].count({
@@ -81,13 +76,13 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 
 			this.logger.log(
 				`Multiple ${this.prismaModel} deleted`,
-				JSON.stringify({ ids })
+				JSON.stringify(ids)
 			)
 			return true
 		} catch (error) {
 			this.logger.error(
 				`Error deleting multiple ${this.prismaModel}`,
-				JSON.stringify({ ids, error })
+				JSON.stringify(ids, error)
 			)
 			throw error
 		}
@@ -99,7 +94,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 
 			this.logger.log(
 				`All ${this.prismaModel} records deleted`,
-				JSON.stringify({ count: result.count })
+				JSON.stringify(result.count)
 			)
 			return result
 		} catch (error) {
