@@ -27,6 +27,7 @@ export class CertificatesService extends BaseService<
 					lastName: { contains: params.studentName, mode: 'insensitive' }
 				}
 			},
+
 			orderBy: {
 				student: {
 					lastName: params.orderBy
