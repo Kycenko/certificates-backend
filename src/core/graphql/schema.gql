@@ -57,9 +57,6 @@ input CertificateParamsInput {
   departmentTitle: String
   finishDate: DateTime
   groupTitle: String
-  limit: Float! = 10
-  orderBy: String! = "asc"
-  page: Float! = 1
   startDate: DateTime
   studentLastName: String
 }
@@ -291,9 +288,6 @@ input StudentParamsInput {
   groupTitle: String
   isExpelled: Boolean = false
   lastName: String
-  limit: Float! = 10
-  orderBy: String! = "asc"
-  page: Float! = 1
 }
 
 input UpdateCertificateInput {

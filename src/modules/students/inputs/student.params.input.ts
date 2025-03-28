@@ -1,8 +1,8 @@
-import { BaseParamsInput } from '@/shared/base/base-params.input'
+import { BaseParamsWithPaginationInput } from '@/shared/base/base-params.input'
 import { Field, InputType } from '@nestjs/graphql'
 
 @InputType()
-export class StudentParamsInput extends BaseParamsInput {
+export class StudentParamsInput extends BaseParamsWithPaginationInput {
 	@Field(() => String, { nullable: true })
 	lastName?: string
 
@@ -20,10 +20,4 @@ export class StudentParamsInput extends BaseParamsInput {
 
 	@Field(() => Boolean, { nullable: true, defaultValue: false })
 	isExpelled?: boolean
-
-	@Field(() => Number, { defaultValue: 1 })
-	page: number
-
-	@Field(() => Number, { defaultValue: 10 })
-	limit: number
 }

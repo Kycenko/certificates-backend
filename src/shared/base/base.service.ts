@@ -4,14 +4,18 @@ import { Prisma } from '@prisma/client'
 import { CustomLogger } from '../utils/custom-logger'
 
 @Injectable()
-export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
+export class BaseService<
+	TModel,
+	CreateInput,
+	UpdateInput = Partial<CreateInput>
+> {
 	constructor(
 		protected readonly prismaService: PrismaService,
 		private readonly prismaModel: Prisma.ModelName,
 		protected readonly logger: CustomLogger = new CustomLogger()
 	) {}
 
-	async create(createDto: CreateInput): Promise<T> {
+	async create(createDto: CreateInput): Promise<TModel> {
 		try {
 			const result = await this.prismaService[this.prismaModel].create({
 				data: createDto
@@ -25,7 +29,7 @@ export class BaseService<T, CreateInput, UpdateInput = Partial<CreateInput>> {
 		}
 	}
 
-	async update(id: string, updateDto: UpdateInput): Promise<T> {
+	async update(id: string, updateDto: UpdateInput): Promise<TModel> {
 		try {
 			const result = await this.prismaService[this.prismaModel].update({
 				where: { id },
