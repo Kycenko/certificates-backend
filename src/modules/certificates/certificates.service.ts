@@ -28,6 +28,9 @@ export class CertificatesService extends BaseService<
 
 	async getAll({ params }: { params?: CertificateParamsInput }) {
 		try {
+			const { page = 1, limit = 10 } = params || {}
+			const skipCount = (page - 1) * limit
+
 			this.logger.log(
 				`Fetching certificates with params: ${JSON.stringify(params)}`
 			)
@@ -56,7 +59,9 @@ export class CertificatesService extends BaseService<
 					student: true,
 					physicalEducation: true,
 					healthGroup: true
-				}
+				},
+				skip: skipCount,
+				take: limit
 			})
 
 			if (!certificates) throw new ConflictException('Certificates not found')

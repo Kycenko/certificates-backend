@@ -14,7 +14,8 @@
 		"start:prod": "node dist/main",
 		"lint": "eslint \"src/**/*.ts\" --fix",
 		"prepare": "husky",
-		"prisma:seed": "ts-node prisma/seed.ts"
+		"prisma:seed": "ts-node prisma/seed.ts",
+		"test:watch": "jest --watch"
 	},
 	"dependencies": {
 		"@apollo/server": "^4.11.3",
@@ -70,6 +71,9 @@
 		"winston-elasticsearch": "^0.19.0"
 	},
 	"jest": {
+		"moduleNameMapper": {
+			"^@/(.*)$": "<rootDir>/$1"
+		},
 		"moduleFileExtensions": [
 			"js",
 			"json",
