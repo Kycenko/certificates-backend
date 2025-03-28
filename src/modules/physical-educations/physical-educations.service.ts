@@ -26,8 +26,12 @@ export class PhysicalEducationsService extends BaseService<
 
 			const physicalEducations = await this.prisma.physicalEducation.findMany({
 				where: { title: { contains: params?.title, mode: 'insensitive' } },
+
 				orderBy: {
 					title: params?.orderBy
+				},
+				include: {
+					certificates: true
 				}
 			})
 
@@ -50,7 +54,10 @@ export class PhysicalEducationsService extends BaseService<
 			this.logger.log(`Fetching physicalEducation by ID: ${id}`)
 
 			const healthGroup = await this.prisma.physicalEducation.findUnique({
-				where: { id }
+				where: { id },
+				include: {
+					certificates: true
+				}
 			})
 
 			if (!healthGroup) {

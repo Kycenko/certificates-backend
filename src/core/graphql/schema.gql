@@ -133,6 +133,7 @@ input HealthGroupInput {
 }
 
 type HealthGroupModel {
+  certificates: [CertificateModel!]
   createdAt: DateTime!
   id: String!
   title: String!
@@ -201,6 +202,7 @@ input PhysicalEducationInput {
 }
 
 type PhysicalEducationModel {
+  certificates: [CertificateModel!]
   createdAt: DateTime!
   id: String!
   title: String!

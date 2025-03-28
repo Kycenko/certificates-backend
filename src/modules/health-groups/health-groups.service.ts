@@ -28,6 +28,13 @@ export class HealthGroupsService extends BaseService<
 				where: { title: { contains: params?.title, mode: 'insensitive' } },
 				orderBy: {
 					title: params?.orderBy
+				},
+				include: {
+					certificates: {
+						include: {
+							student: true
+						}
+					}
 				}
 			})
 
@@ -49,7 +56,14 @@ export class HealthGroupsService extends BaseService<
 			this.logger.log(`Fetching healthGroup by ID: ${id}`)
 
 			const healthGroup = await this.prisma.healthGroup.findUnique({
-				where: { id }
+				where: { id },
+				include: {
+					certificates: {
+						include: {
+							student: true
+						}
+					}
+				}
 			})
 
 			if (!healthGroup) {
