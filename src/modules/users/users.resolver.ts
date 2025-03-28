@@ -2,7 +2,6 @@ import { CurrentUser } from '@/shared/decorators/user.decorator'
 import { GqlAuthGuard } from '@/shared/guards/gql-auth.guard'
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { UpdateUserInput } from './inputs/update-user.input'
 import { UserModel } from './models/user.model'
 import { UsersService } from './users.service'
 
@@ -19,24 +18,6 @@ export class UsersResolver {
 	@Query(() => UserModel, { name: 'getUserByLogin' })
 	async getByLogin(@Args('login') login: string) {
 		return this.usersService.getByLogin(login)
-	}
-
-	@Mutation(() => UserModel)
-	async changePassword(
-		@Args('id') id: string,
-		@Args('oldPassword') oldPassword: string,
-		@Args('newPassword') newPassword: string
-	) {
-		return this.usersService.changePassword(id, oldPassword, newPassword)
-	}
-
-	@Mutation(() => UserModel, { name: 'updateUser' })
-	async update(
-		@Args('id') id: string,
-		@Args('data') data: UpdateUserInput,
-		@Args('password') password: string
-	) {
-		return this.usersService.update(id, data, password)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeUser' })

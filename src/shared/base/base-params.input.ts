@@ -6,6 +6,7 @@ export class BaseOrderParamsInput {
 	orderBy?: 'asc' | 'desc'
 }
 
+@InputType()
 export class BaseParamsWithPaginationInput extends BaseOrderParamsInput {
 	@Field(() => Number, { defaultValue: 1 })
 	page: number

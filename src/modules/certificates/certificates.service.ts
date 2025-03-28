@@ -7,6 +7,7 @@ import {
 	NotFoundException
 } from '@nestjs/common'
 import { Certificate } from '@prisma/client'
+import SuperJSON from 'superjson'
 import { CertificateHistoriesService } from '../certificate-histories/certificate-histories.service'
 import { CertificateInput } from './inputs/certificate.input'
 import { CertificateParamsInput } from './inputs/certificate.params.input'
@@ -39,7 +40,7 @@ export class CertificatesService extends BaseService<
 
 			if (cachedCertificates) {
 				this.logger.log('Fetching certificates from cache')
-				return JSON.parse(cachedCertificates)
+				return SuperJSON.parse(cachedCertificates)
 			}
 
 			const certificates = await this.prisma.certificate.findMany({
@@ -67,7 +68,11 @@ export class CertificatesService extends BaseService<
 			if (!certificates) throw new ConflictException('Certificates not found')
 			this.logger.log(`Found ${certificates.length} certificates`)
 
-			await this.redis.set('certificates', JSON.stringify(certificates), 60)
+			await this.redis.set(
+				'certificates',
+				SuperJSON.stringify(certificates),
+				60
+			)
 
 			return certificates
 		} catch (error) {

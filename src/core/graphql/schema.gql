@@ -57,6 +57,9 @@ input CertificateParamsInput {
   departmentTitle: String
   finishDate: DateTime
   groupTitle: String
+  limit: Float! = 10
+  orderBy: String! = "asc"
+  page: Float! = 1
   startDate: DateTime
   studentLastName: String
 }
@@ -147,7 +150,6 @@ input LoginInput {
 }
 
 type Mutation {
-  changePassword(id: String!, newPassword: String!, oldPassword: String!): UserModel!
   createCertificate(data: CertificateInput!): CertificateModel!
   createCertificateHistory(data: CertificateHistoryInput!): CertificateHistoryModel!
   createCourse(data: CourseInput!): CourseModel!
@@ -192,7 +194,6 @@ type Mutation {
   updateHealthGroup(data: HealthGroupInput!, id: String!): HealthGroupModel!
   updatePhysicalEducation(data: PhysicalEducationInput!, id: String!): PhysicalEducationModel!
   updateStudent(data: UpdateStudentInput!, id: String!): StudentModel!
-  updateUser(data: UpdateUserInput!, id: String!, password: String!): UserModel!
 }
 
 input PhysicalEducationInput {
@@ -288,6 +289,9 @@ input StudentParamsInput {
   groupTitle: String
   isExpelled: Boolean = false
   lastName: String
+  limit: Float! = 10
+  orderBy: String! = "asc"
+  page: Float! = 1
 }
 
 input UpdateCertificateInput {
@@ -310,11 +314,6 @@ input UpdateStudentInput {
   isExpelled: Boolean = false
   lastName: String
   secondName: String
-}
-
-input UpdateUserInput {
-  isAdmin: Boolean
-  login: String
 }
 
 type UserModel {

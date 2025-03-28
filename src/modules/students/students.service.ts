@@ -3,6 +3,7 @@ import { RedisService } from '@/core/redis/redis.service'
 import { BaseService } from '@/shared/base/base.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Student } from '@prisma/client'
+import SuperJSON from 'superjson'
 import { StudentHistoriesService } from '../student-histories/student-histories.service'
 import { StudentInput } from './inputs/student.input'
 import { StudentParamsInput } from './inputs/student.params.input'
@@ -44,7 +45,7 @@ export class StudentsService extends BaseService<
 
 			if (cachedStudents) {
 				this.logger.log('Fetching students from cache')
-				return JSON.parse(cachedStudents)
+				return SuperJSON.parse(cachedStudents)
 			}
 
 			const students = await this.prisma.student.findMany({
@@ -85,7 +86,7 @@ export class StudentsService extends BaseService<
 			if (!students) throw new ConflictException('Students not found')
 			this.logger.log(`Found ${students.length} students`)
 
-			await this.redis.set('students', JSON.stringify(students), 60)
+			await this.redis.set('students', SuperJSON.stringify(students), 60)
 
 			return students
 		} catch (error) {

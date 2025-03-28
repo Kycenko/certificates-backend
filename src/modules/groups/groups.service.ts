@@ -7,6 +7,7 @@ import {
 	NotFoundException
 } from '@nestjs/common'
 import { Group } from '@prisma/client'
+import SuperJSON from 'superjson'
 import { GroupInput } from './inputs/group.input'
 import { GroupParamsInput } from './inputs/group.params.input'
 
@@ -27,7 +28,7 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 
 			if (cachedGroups) {
 				this.logger.log('Fetching groups from cache')
-				return JSON.parse(cachedGroups)
+				return SuperJSON.parse(cachedGroups)
 			}
 
 			const groups = await this.prisma.group.findMany({
@@ -46,7 +47,7 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 			if (!groups) throw new ConflictException('Groups not found')
 			this.logger.log(`Found ${groups.length} groups`)
 
-			await this.redis.set('groups', JSON.stringify(groups), 60)
+			await this.redis.set('groups', SuperJSON.stringify(groups), 60)
 
 			return groups
 		} catch (error) {

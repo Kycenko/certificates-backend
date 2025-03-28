@@ -109,6 +109,7 @@ export class AuthService {
 				id: user.id,
 				login: user.login,
 				isAdmin: user.isAdmin,
+
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt
 			}

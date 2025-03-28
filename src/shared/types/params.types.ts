@@ -46,3 +46,7 @@ export type CertificateParams = {
 	finishDate?: Date
 } & OrderByParams &
 	PaginationParams
+
+export type DepartmentStatistics = {
+	id: string
+} & OrderByParams
