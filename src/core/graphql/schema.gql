@@ -163,6 +163,7 @@ type Mutation {
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
   register(data: RegisterInput!): AuthModel!
+  removeAllDepartments: Boolean!
   removeCertificate(id: String!): Boolean!
   removeCourse(id: String!): Boolean!
   removeDepartment(id: String!): Boolean!

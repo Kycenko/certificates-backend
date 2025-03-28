@@ -51,4 +51,10 @@ export class DepartmentsResolver {
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.departmentsService.removeMany(params.ids)
 	}
+
+	@Mutation(() => Boolean, { name: 'removeAllDepartments' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.departmentsService.removeAll()
+	}
 }
