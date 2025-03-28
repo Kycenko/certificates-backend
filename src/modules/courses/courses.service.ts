@@ -20,18 +20,18 @@ export class CoursesService extends BaseService<
 		super(prisma, 'Course')
 	}
 
-	async getAll({ params }: { params: CourseParamsInput }) {
+	async getAll({ params }: { params?: CourseParamsInput }) {
 		try {
 			this.logger.log(`Fetching courses with params: ${JSON.stringify(params)}`)
 
 			const courses = await this.prisma.course.findMany({
 				where: {
 					department: {
-						title: { contains: params.departmentTitle, mode: 'insensitive' }
+						title: { contains: params?.departmentTitle, mode: 'insensitive' }
 					}
 				},
 				orderBy: {
-					number: params.orderBy
+					number: params?.orderBy
 				},
 				include: {
 					department: true,
@@ -54,6 +54,7 @@ export class CoursesService extends BaseService<
 			this.logger.log(`Fetching course by ID: ${id}`)
 			const course = await this.prisma.course.findUnique({
 				where: { id },
+
 				include: {
 					department: true,
 					groups: true

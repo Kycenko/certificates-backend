@@ -19,7 +19,7 @@ export class CoursesResolver {
 
 	@Query(() => [CourseModel], { name: 'getAllCourses' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: CourseParamsInput) {
+	async getAll(@Args('params', { nullable: true }) params?: CourseParamsInput) {
 		return this.coursesService.getAll({ params })
 	}
 
@@ -45,5 +45,11 @@ export class CoursesResolver {
 	@AuthRole('admin')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.coursesService.removeMany(params.ids)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeAllCourses' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.coursesService.removeAll()
 	}
 }

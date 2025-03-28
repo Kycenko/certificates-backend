@@ -25,4 +25,10 @@ export class CertificateHistoriesResolver {
 	async getAll(@Args('certificateId') certificateId: string) {
 		return this.certificateHistoriesService.getAll(certificateId)
 	}
+
+	@Mutation(() => Boolean, { name: 'removeAllCertificateHistories' })
+	@AuthRole('admin')
+	async removeAll(@Args('certificateId') certificateId: string) {
+		return this.certificateHistoriesService.removeAll(certificateId)
+	}
 }

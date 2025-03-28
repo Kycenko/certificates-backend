@@ -21,7 +21,7 @@ export class StudentModel extends BaseModel {
 	@Field(() => GroupModel, { nullable: true })
 	group?: GroupModel
 	@Field(() => [CertificateModel], { nullable: true })
-	certificates: CertificateModel[]
+	certificates?: CertificateModel[]
 	@Field(() => [StudentHistoryModel], { nullable: true })
-	studentHistories: StudentHistoryModel[]
+	studentHistories?: StudentHistoryModel[]
 }

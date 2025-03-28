@@ -18,7 +18,7 @@ export class DepartmentsService extends BaseService<
 		super(prisma, 'Department')
 	}
 
-	async getAll({ params }: { params: DepartmentParamsInput }) {
+	async getAll({ params }: { params?: DepartmentParamsInput }) {
 		try {
 			this.logger.log(
 				`Fetching departments with params: ${JSON.stringify(params)}`
@@ -27,11 +27,11 @@ export class DepartmentsService extends BaseService<
 			const departments = await this.prisma.department.findMany({
 				where: {
 					title: {
-						contains: params.title,
+						contains: params?.title,
 						mode: 'insensitive'
 					}
 				},
-				orderBy: { title: params.orderBy },
+				orderBy: { title: params?.orderBy },
 				include: { courses: true }
 			})
 

@@ -1,7 +1,8 @@
+import { BaseParamsInput } from '@/shared/base/base-params.input'
 import { Field, InputType } from '@nestjs/graphql'
 
 @InputType()
-export class StudentParamsInput {
+export class StudentParamsInput extends BaseParamsInput {
 	@Field(() => String, { nullable: true })
 	lastName?: string
 
@@ -20,12 +21,9 @@ export class StudentParamsInput {
 	@Field(() => Boolean, { nullable: true, defaultValue: false })
 	isExpelled?: boolean
 
-	@Field(() => String, { defaultValue: 'asc' })
-	orderBy: 'asc' | 'desc'
-
 	@Field(() => Number, { defaultValue: 1 })
 	page: number
 
-	@Field(() => Number, { defaultValue: 25 })
+	@Field(() => Number, { defaultValue: 10 })
 	limit: number
 }

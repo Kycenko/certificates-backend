@@ -21,4 +21,10 @@ export class StudentHistoriesResolver {
 	async getAll(@Args('studentId') studentId: string) {
 		return this.studentHistoriesService.getAll(studentId)
 	}
+
+	@Mutation(() => Boolean, { name: 'removeAllStudentHistory' })
+	@AuthRole('admin')
+	async removeAll(@Args('studentId') studentId: string) {
+		return this.studentHistoriesService.removeAll(studentId)
+	}
 }

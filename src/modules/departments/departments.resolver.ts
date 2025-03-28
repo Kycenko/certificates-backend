@@ -18,7 +18,9 @@ export class DepartmentsResolver {
 
 	@Query(() => [DepartmentModel], { name: 'getAllDepartments' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: DepartmentParamsInput) {
+	async getAll(
+		@Args('params', { nullable: true }) params?: DepartmentParamsInput
+	) {
 		return this.departmentsService.getAll({ params })
 	}
 

@@ -18,7 +18,7 @@ export class GroupsResolver {
 
 	@Query(() => [GroupModel], { name: 'getAllGroups' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: GroupParamsInput) {
+	async getAll(@Args('params', { nullable: true }) params?: GroupParamsInput) {
 		return this.groupsService.getAll({ params })
 	}
 
@@ -50,5 +50,11 @@ export class GroupsResolver {
 	@AuthRole('admin')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.groupsService.removeMany(params.ids)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeAllGroups' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.groupsService.removeAll()
 	}
 }

@@ -1,10 +1,11 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
+import { RedisService } from '@/core/redis/redis.service'
 import { BaseService } from '@/shared/base/base.service'
-import { StudentParams } from '@/shared/types/params.types'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Student } from '@prisma/client'
 import { StudentHistoriesService } from '../student-histories/student-histories.service'
 import { StudentInput } from './inputs/student.input'
+import { StudentParamsInput } from './inputs/student.params.input'
 import { UpdateStudentInput } from './inputs/update-student.input'
 
 @Injectable()
@@ -15,106 +16,122 @@ export class StudentsService extends BaseService<
 > {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly histories: StudentHistoriesService
+		private readonly histories: StudentHistoriesService,
+		private readonly redis: RedisService
 	) {
 		super(prisma, 'Student')
 	}
 
-	async getAll({ params }: { params: StudentParams }) {
-		const {
-			page = 1,
-			limit = 10,
-			lastName,
-			departmentTitle,
-			courseNumber,
-			groupTitle,
-			isExpelled,
-			orderBy
-		} = params
-		const skipCount = (page - 1) * limit
+	async getAll({ params }: { params?: StudentParamsInput }) {
+		try {
+			const {
+				page = 1,
+				limit = 10,
+				lastName,
+				departmentTitle,
+				courseNumber,
+				groupTitle,
+				isExpelled,
+				orderBy
+			} = params || {}
+			const skipCount = (page - 1) * limit
 
-		// const totalStudents = await this.prisma.student.count({
-		// 	where: {
-		// 		lastName: lastName
-		// 			? { contains: lastName, mode: 'insensitive' }
-		// 			: undefined,
-		// 		group: {
-		// 			title: groupTitle
-		// 				? { contains: groupTitle, mode: 'insensitive' }
-		// 				: undefined
-		// 		},
+			this.logger.log(
+				`Fetching students with params: ${JSON.stringify(params)}`
+			)
 
-		// 		isExpelled: isExpelled ?? undefined
-		// 	}
-		// })
+			const cachedStudents = await this.redis.get('students')
 
-		const students = await this.prisma.student.findMany({
-			orderBy: { lastName: orderBy },
-			include: {
-				certificates: true,
-				group: {
-					include: {
-						course: {
-							include: {
-								department: true
-							}
-						}
-					}
-				}
-			},
-			where: {
-				lastName: lastName
-					? { contains: lastName, mode: 'insensitive' }
-					: undefined,
+			if (cachedStudents) {
+				this.logger.log('Fetching students from cache')
+				return JSON.parse(cachedStudents)
+			}
 
-				isExpelled: isExpelled ?? undefined
-			},
-			skip: skipCount,
-			take: limit
-		})
-
-		return students
-
-		// return {
-		// 	students,
-		// 	total: totalStudents,
-		// 	page,
-		// 	limit,
-		// 	totalPages: Math.ceil(totalStudents / limit)
-		// }
-	}
-
-	async getById(id: string) {
-		const student = await this.prisma.student.findUnique({
-			where: { id },
-			include: {
-				group: {
-					include: {
-						course: {
-							include: {
-								department: true
+			const students = await this.prisma.student.findMany({
+				orderBy: { lastName: orderBy },
+				include: {
+					certificates: true,
+					group: {
+						include: {
+							course: {
+								include: {
+									department: true
+								}
 							}
 						}
 					}
 				},
-				certificates: true
+				where: {
+					lastName: lastName
+						? { contains: lastName, mode: 'insensitive' }
+						: undefined,
+					group: {
+						title: groupTitle
+							? { contains: groupTitle, mode: 'insensitive' }
+							: undefined,
+						course: {
+							number: courseNumber ? courseNumber : undefined,
+							department: departmentTitle
+								? { title: { contains: departmentTitle, mode: 'insensitive' } }
+								: undefined
+						}
+					},
+					isExpelled: isExpelled ?? undefined
+				},
+				skip: skipCount,
+				take: limit
+			})
+
+			if (!students) throw new ConflictException('Students not found')
+			this.logger.log(`Found ${students.length} students`)
+
+			await this.redis.set('students', JSON.stringify(students), 60)
+
+			return students
+		} catch (error) {
+			this.logger.error(
+				`Error fetching students: ${error.message}`,
+				error.stack
+			)
+			throw error
+		}
+	}
+	async getById(id: string) {
+		try {
+			this.logger.log(`Fetching student by ID: ${id}`)
+			const student = await this.prisma.student.findUnique({
+				where: { id },
+				include: {
+					group: {
+						include: {
+							course: {
+								include: {
+									department: true
+								}
+							}
+						}
+					},
+					certificates: true
+				}
+			})
+
+			if (!student) {
+				this.logger.warn(`healthGroup not found with ID: ${id}`)
+				throw new ConflictException('Student not found!')
 			}
-		})
-
-		if (!student) throw new ConflictException('Student not found!')
-
-		return student
+			this.logger.log(`Successfully fetched student with ID: ${id}`)
+			return student
+		} catch (error) {
+			this.logger.error(
+				`Error fetching healthGroup by ID ${id}: ${error.message}`,
+				error.stack
+			)
+			throw error
+		}
 	}
 
 	async update(id: string, data: UpdateStudentInput) {
-		const student = await this.prisma.student.findUnique({ where: { id } })
-
-		if (!student) throw new ConflictException('Student not found!')
-
-		const updated = await this.prisma.student.update({
-			where: { id },
-			data
-		})
+		const updated = await super.update(id, data)
 
 		await this.histories.create({
 			studentId: id,

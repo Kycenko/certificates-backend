@@ -2,7 +2,8 @@ import { RemoveManyInput } from '@/shared/base/remove-many.input'
 import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { HealthGroupsService } from './health-groups.service'
-import { HealthGroupInput } from './inputs/health-group.module'
+import { HealthGroupInput } from './inputs/health-group.input'
+
 import { HealthGroupParamsInput } from './inputs/health-group.params.input'
 import { HealthGroupModel } from './models/health-group.model'
 
@@ -17,7 +18,9 @@ export class HealthGroupsResolver {
 
 	@Query(() => [HealthGroupModel], { name: 'getAllHealthGroups' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: HealthGroupParamsInput) {
+	async getAll(
+		@Args('params', { nullable: true }) params?: HealthGroupParamsInput
+	) {
 		return this.healthGroupsService.getAll({ params })
 	}
 
@@ -49,5 +52,11 @@ export class HealthGroupsResolver {
 	@AuthRole('admin')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.healthGroupsService.removeMany(params.ids)
+	}
+
+	@Mutation(() => HealthGroupModel, { name: 'removeAllHealthGroup' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.healthGroupsService.removeAll()
 	}
 }

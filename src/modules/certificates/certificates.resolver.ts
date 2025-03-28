@@ -19,7 +19,9 @@ export class CertificatesResolver {
 
 	@Query(() => [CertificateModel], { name: 'getAllCertificates' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: CertificateParamsInput) {
+	async getAll(
+		@Args('params', { nullable: true }) params?: CertificateParamsInput
+	) {
 		return this.certificatesService.getAll({ params })
 	}
 
@@ -48,5 +50,11 @@ export class CertificatesResolver {
 	@AuthRole('admin')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.certificatesService.removeMany(params.ids)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeAllCertificates' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.certificatesService.removeAll()
 	}
 }

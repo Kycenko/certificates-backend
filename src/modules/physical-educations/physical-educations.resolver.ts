@@ -20,7 +20,9 @@ export class PhysicalEducationsResolver {
 
 	@Query(() => [PhysicalEducationModel], { name: 'getAllPhysicalEducations' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: PhysicalEducationParamsInput) {
+	async getAll(
+		@Args('params', { nullable: true }) params?: PhysicalEducationParamsInput
+	) {
 		return this.physicalEducationsService.getAll({ params })
 	}
 
@@ -55,5 +57,11 @@ export class PhysicalEducationsResolver {
 	@AuthRole('admin')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.physicalEducationsService.removeMany(params.ids)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeAllPhysicalEducations' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.physicalEducationsService.removeAll()
 	}
 }

@@ -2,7 +2,7 @@ import { RemoveManyInput } from '@/shared/base/remove-many.input'
 import { AuthRole } from '@/shared/decorators/role.decorator'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { StudentInput } from './inputs/student.input'
-import { StudentParamsInput } from './inputs/students.params.input'
+import { StudentParamsInput } from './inputs/student.params.input'
 import { UpdateStudentInput } from './inputs/update-student.input'
 import { StudentModel } from './models/student.model'
 import { StudentsService } from './students.service'
@@ -19,7 +19,9 @@ export class StudentsResolver {
 
 	@Query(() => [StudentModel], { name: 'getAllStudents' })
 	@AuthRole('admin')
-	async getAll(@Args('params') params: StudentParamsInput) {
+	async getAll(
+		@Args('params', { nullable: true }) params?: StudentParamsInput
+	) {
 		return this.studentsService.getAll({ params })
 	}
 
@@ -45,5 +47,11 @@ export class StudentsResolver {
 	@AuthRole('admin')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.studentsService.removeMany(params.ids)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeAllStudents' })
+	@AuthRole('admin')
+	async removeAll() {
+		return this.studentsService.removeAll()
 	}
 }

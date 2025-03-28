@@ -19,13 +19,11 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 		super(prisma, 'Group')
 	}
 
-	async getAll({ params }: { params: GroupParamsInput }) {
+	async getAll({ params }: { params?: GroupParamsInput }) {
 		try {
 			this.logger.log(`Fetching groups with params: ${JSON.stringify(params)}`)
 
-			const cachedGroups = await this.redis.get(
-				`groups:${params.title}:${params.orderBy}`
-			)
+			const cachedGroups = await this.redis.get('groups')
 
 			if (cachedGroups) {
 				this.logger.log('Fetching groups from cache')
@@ -33,9 +31,9 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 			}
 
 			const groups = await this.prisma.group.findMany({
-				where: { title: { contains: params.title, mode: 'insensitive' } },
+				where: { title: { contains: params?.title, mode: 'insensitive' } },
 				orderBy: {
-					title: params.orderBy
+					title: params?.orderBy
 				},
 				include: {
 					students: true,
@@ -61,17 +59,17 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 		try {
 			this.logger.log(`Fetching group by ID: ${id}`)
 
-			const record = await this.prisma.group.findUnique({
+			const group = await this.prisma.group.findUnique({
 				where: { id }
 			})
 
-			if (!record) {
+			if (!group) {
 				this.logger.warn(`group not found with ID: ${id}`)
 				throw new NotFoundException(`group not found!`)
 			}
 
 			this.logger.log(`Successfully fetched group with ID: ${id}`)
-			return record
+			return group
 		} catch (error) {
 			this.logger.error(
 				`Error fetching group by ID ${id}: ${error.message}`,

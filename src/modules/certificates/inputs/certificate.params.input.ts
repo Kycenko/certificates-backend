@@ -1,7 +1,11 @@
+import { BaseParamsInput } from '@/shared/base/base-params.input'
 import { Field, InputType } from '@nestjs/graphql'
 
 @InputType()
-export class CertificateParamsInput {
+export class CertificateParamsInput extends BaseParamsInput {
+	@Field(() => String, { nullable: true })
+	studentLastName?: string
+
 	@Field(() => String, { nullable: true })
 	departmentTitle?: string
 
@@ -17,12 +21,9 @@ export class CertificateParamsInput {
 	@Field(() => Date, { nullable: true })
 	finishDate?: Date
 
-	@Field(() => String, { defaultValue: 'asc' })
-	orderBy: 'asc' | 'desc'
-
 	@Field(() => Number, { defaultValue: 1 })
 	page: number
 
-	@Field(() => Number, { defaultValue: 25 })
+	@Field(() => Number, { defaultValue: 10 })
 	limit: number
 }
