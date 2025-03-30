@@ -53,7 +53,14 @@ export class DepartmentsService extends BaseService<
 			this.logger.log(`Fetching department by ID: ${id}`)
 
 			const record = await this.prisma.department.findUnique({
-				where: { id }
+				where: { id },
+				include: {
+					courses: {
+						include: {
+							groups: true
+						}
+					}
+				}
 			})
 
 			if (!record) {
