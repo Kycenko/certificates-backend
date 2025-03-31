@@ -61,7 +61,10 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 			this.logger.log(`Fetching group by ID: ${id}`)
 
 			const group = await this.prisma.group.findUnique({
-				where: { id }
+				where: { id },
+				include: {
+					students: true
+				}
 			})
 
 			if (!group) {

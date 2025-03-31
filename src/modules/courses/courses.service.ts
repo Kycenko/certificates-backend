@@ -57,7 +57,7 @@ export class CoursesService extends BaseService<
 
 				include: {
 					department: true,
-					groups: true
+					groups: { include: { students: true } }
 				}
 			})
 
