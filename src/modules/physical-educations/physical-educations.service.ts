@@ -31,7 +31,11 @@ export class PhysicalEducationsService extends BaseService<
 					title: params?.orderBy
 				},
 				include: {
-					certificates: true
+					certificates: {
+						include: {
+							student: true
+						}
+					}
 				}
 			})
 
@@ -56,7 +60,11 @@ export class PhysicalEducationsService extends BaseService<
 			const healthGroup = await this.prisma.physicalEducation.findUnique({
 				where: { id },
 				include: {
-					certificates: true
+					certificates: {
+						include: {
+							student: true
+						}
+					}
 				}
 			})
 
