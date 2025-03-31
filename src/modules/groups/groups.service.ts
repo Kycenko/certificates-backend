@@ -63,7 +63,14 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 			const group = await this.prisma.group.findUnique({
 				where: { id },
 				include: {
-					students: true
+					course: {
+						include: { department: true }
+					},
+					students: {
+						include: {
+							certificates: true
+						}
+					}
 				}
 			})
 
