@@ -66,7 +66,7 @@ input CertificateParamsInput {
 
 input CourseInput {
   departmentId: String!
-  number: Float!
+  number: String!
 }
 
 type CourseModel {
@@ -75,7 +75,7 @@ type CourseModel {
   departmentId: String!
   groups: [GroupModel!]
   id: String!
-  number: Float!
+  number: String!
   updatedAt: DateTime!
 }
 
@@ -285,7 +285,7 @@ type StudentModel {
 }
 
 input StudentParamsInput {
-  courseNumber: Float
+  courseNumber: String
   departmentTitle: String
   groupId: String
   groupTitle: String
@@ -306,7 +306,7 @@ input UpdateCertificateInput {
 
 input UpdateCourseInput {
   departmentId: String
-  number: Float
+  number: String
 }
 
 input UpdateStudentInput {

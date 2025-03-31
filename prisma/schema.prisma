@@ -34,7 +34,7 @@ model Department {
 
 model Course {
   id           String     @id @default(uuid())
-  number       Int
+  number       String
   departmentId String     @map("department_id")
   groups       Group[]
   department   Department @relation(fields: [departmentId], references: [id])

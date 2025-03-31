@@ -5,8 +5,8 @@ import { Field, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 export class CourseModel extends BaseModel {
-	@Field(() => Number)
-	number: number
+	@Field(() => String)
+	number: string
 
 	@Field(() => String)
 	departmentId: string

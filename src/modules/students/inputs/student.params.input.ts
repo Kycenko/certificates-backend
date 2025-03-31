@@ -9,8 +9,8 @@ export class StudentParamsInput extends BaseParamsWithPaginationInput {
 	@Field(() => String, { nullable: true })
 	departmentTitle?: string
 
-	@Field(() => Number, { nullable: true })
-	courseNumber?: number
+	@Field(() => String, { nullable: true })
+	courseNumber?: string
 
 	@Field(() => String, { nullable: true })
 	groupTitle?: string
