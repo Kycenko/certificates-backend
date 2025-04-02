@@ -11,6 +11,6 @@ export class StudentHistoryModel extends BaseModel {
 	groupId?: string
 	@Field(() => GroupModel, { nullable: true })
 	group?: GroupModel
-	@Field(() => GroupModel)
+	@Field(() => StudentModel)
 	student: StudentModel
 }

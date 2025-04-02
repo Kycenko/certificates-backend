@@ -86,7 +86,7 @@ export class StudentsService extends BaseService<
 			if (!students) throw new ConflictException('Students not found')
 			this.logger.log(`Found ${students.length} students`)
 
-			await this.redis.set('students', SuperJSON.stringify(students), 60)
+			await this.redis.set('students', SuperJSON.stringify(students), 10)
 
 			return students
 		} catch (error) {
@@ -140,5 +140,15 @@ export class StudentsService extends BaseService<
 		})
 
 		return updated
+	}
+
+	async remove(id: string) {
+		try {
+			await super.remove(id)
+			this.redis.del('students')
+			return true
+		} catch {
+			return false
+		}
 	}
 }

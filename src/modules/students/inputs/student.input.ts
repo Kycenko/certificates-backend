@@ -21,12 +21,6 @@ export class StudentInput {
 	})
 	lastName: string
 	@Field(() => String, { nullable: true })
-	@MinLength(3, {
-		message: 'Last name must be at least 3 characters long'
-	})
-	@MaxLength(20, {
-		message: 'Last name must be at most 20 characters long'
-	})
 	@IsOptional()
 	secondName?: string
 	@Field(() => Date)

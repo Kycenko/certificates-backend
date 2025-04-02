@@ -255,7 +255,7 @@ type StudentHistoryModel {
   group: GroupModel
   groupId: String
   id: String!
-  student: GroupModel!
+  student: StudentModel!
   studentId: String!
   updatedAt: DateTime!
 }
