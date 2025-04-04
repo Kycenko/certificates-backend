@@ -8,7 +8,6 @@ import { StudentHistoriesService } from '../student-histories/student-histories.
 import { StudentInput } from './inputs/student.input'
 import { StudentParamsInput } from './inputs/student.params.input'
 import { UpdateStudentInput } from './inputs/update-student.input'
-
 @Injectable()
 export class StudentsService extends BaseService<
 	Student,
@@ -121,7 +120,10 @@ export class StudentsService extends BaseService<
 				throw new ConflictException('Student not found!')
 			}
 			this.logger.log(`Successfully fetched student with ID: ${id}`)
-			return student
+			return {
+				...student,
+				birthDate: new Date(student.birthDate)
+			}
 		} catch (error) {
 			this.logger.error(
 				`Error fetching healthGroup by ID ${id}: ${error.message}`,
