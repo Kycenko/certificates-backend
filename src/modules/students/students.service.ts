@@ -22,6 +22,30 @@ export class StudentsService extends BaseService<
 		super(prisma, 'Student')
 	}
 
+	async create(createDto: StudentInput): Promise<Student> {
+		const student = await super.create(createDto)
+
+		await this.redis.del('students')
+
+		return student
+	}
+
+	async removeMany(ids: string[]): Promise<boolean> {
+		const result = await super.removeMany(ids)
+
+		await this.redis.del('students')
+
+		return result
+	}
+
+	async removeAll(): Promise<{ count: number }> {
+		const result = await super.removeAll()
+
+		await this.redis.del('students')
+
+		return result
+	}
+
 	async getAll({ params }: { params?: StudentParamsInput }) {
 		try {
 			const {
@@ -140,7 +164,7 @@ export class StudentsService extends BaseService<
 			studentId: id,
 			groupId: data.groupId
 		})
-
+		await this.redis.del('students')
 		return updated
 	}
 

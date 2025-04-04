@@ -27,6 +27,40 @@ export class CertificatesService extends BaseService<
 		super(prisma, 'Certificate')
 	}
 
+	async create(createDto: CertificateInput): Promise<Certificate> {
+		const certificate = await super.create(createDto)
+
+		await this.redis.del('certificates')
+
+		return certificate
+	}
+
+	async removeMany(ids: string[]): Promise<boolean> {
+		const result = await super.removeMany(ids)
+
+		await this.redis.del('certificates')
+
+		return result
+	}
+
+	async remove(id: string) {
+		try {
+			await super.remove(id)
+			await this.redis.del('certificates')
+			return true
+		} catch {
+			return false
+		}
+	}
+
+	async removeAll(): Promise<{ count: number }> {
+		const result = await super.removeAll()
+
+		await this.redis.del('certificates')
+
+		return result
+	}
+
 	async getAll({ params }: { params?: CertificateParamsInput }) {
 		try {
 			const { page = 1, limit = 10 } = params || {}
@@ -122,6 +156,8 @@ export class CertificatesService extends BaseService<
 			healthGroupId: data.healthGroupId,
 			physicalEducationId: data.physicalEducationId
 		})
+
+		await this.redis.del('certificates')
 
 		return updated
 	}

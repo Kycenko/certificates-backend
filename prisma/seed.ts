@@ -5,7 +5,7 @@ async function main() {
 	await prisma.user.create({
 		data: {
 			login: 'testuser',
-			passwordHash: await hash('testuser'),
+			passwordHash: await hash('Testuser_1'),
 			isAdmin: true
 		}
 	})

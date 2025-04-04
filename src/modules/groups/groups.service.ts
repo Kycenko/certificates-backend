@@ -20,6 +20,46 @@ export class GroupsService extends BaseService<Group, GroupInput> {
 		super(prisma, 'Group')
 	}
 
+	async create(createDto: GroupInput): Promise<Group> {
+		const group = await super.create(createDto)
+
+		await this.redis.del('groups')
+
+		return group
+	}
+
+	async update(id: string, updateDto: GroupInput): Promise<Group> {
+		const group = await super.update(id, updateDto)
+
+		await this.redis.del('groups')
+
+		return group
+	}
+
+	async remove(id: string): Promise<boolean> {
+		const result = await super.remove(id)
+
+		await this.redis.del('groups')
+
+		return result
+	}
+
+	async removeMany(ids: string[]): Promise<boolean> {
+		const result = await super.removeMany(ids)
+
+		await this.redis.del('groups')
+
+		return result
+	}
+
+	async removeAll(): Promise<{ count: number }> {
+		const result = await super.removeAll()
+
+		await this.redis.del('groups')
+
+		return result
+	}
+
 	async getAll({ params }: { params?: GroupParamsInput }) {
 		try {
 			this.logger.log(`Fetching groups with params: ${JSON.stringify(params)}`)
