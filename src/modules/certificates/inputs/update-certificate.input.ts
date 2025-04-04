@@ -1,11 +1,9 @@
-import { CertificateDateValidator } from '@/shared/validators/certificate-date.validator'
 import { Field, InputType } from '@nestjs/graphql'
-import { Validate } from 'class-validator'
 
 @InputType()
 export class UpdateCertificateInput {
 	@Field(() => Date, { nullable: true })
-	@Validate(CertificateDateValidator)
+	// @Validate(CertificateDateValidator)
 	startDate?: Date
 	@Field(() => Date, { nullable: true })
 	finishDate?: Date

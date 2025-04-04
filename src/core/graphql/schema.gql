@@ -195,6 +195,7 @@ type Mutation {
   updateHealthGroup(data: HealthGroupInput!, id: String!): HealthGroupModel!
   updatePhysicalEducation(data: PhysicalEducationInput!, id: String!): PhysicalEducationModel!
   updateStudent(data: UpdateStudentInput!, id: String!): StudentModel!
+  updateUser(id: String!, updateDto: UpdateUserInput!): UserModel!
 }
 
 input PhysicalEducationInput {
@@ -316,6 +317,12 @@ input UpdateStudentInput {
   isExpelled: Boolean = false
   lastName: String
   secondName: String
+}
+
+input UpdateUserInput {
+  isAdmin: Boolean
+  login: String
+  password: String
 }
 
 type UserModel {
