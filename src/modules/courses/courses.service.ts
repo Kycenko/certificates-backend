@@ -26,6 +26,7 @@ export class CoursesService extends BaseService<
 
 			const courses = await this.prisma.course.findMany({
 				where: {
+					number: { contains: params?.number, mode: 'insensitive' },
 					department: {
 						title: { contains: params?.departmentTitle, mode: 'insensitive' }
 					}

@@ -4,5 +4,8 @@ import { Field, InputType } from '@nestjs/graphql'
 @InputType()
 export class CourseParamsInput extends BaseOrderParamsInput {
 	@Field(() => String, { nullable: true })
+	number?: string
+
+	@Field(() => String, { nullable: true })
 	departmentTitle?: string
 }

@@ -81,6 +81,7 @@ type CourseModel {
 
 input CourseParamsInput {
   departmentTitle: String
+  number: String
   orderBy: String! = "asc"
 }
 
