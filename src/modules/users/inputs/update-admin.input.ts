@@ -1,9 +1,10 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { IsBoolean, IsOptional, MaxLength, MinLength } from 'class-validator'
+import { IsEnum, IsOptional, MaxLength, MinLength } from 'class-validator'
 
 @InputType()
-export class UpdateUserInput {
+export class UpdateAdminInput {
 	@Field(() => String, { nullable: true })
+	@IsOptional()
 	@MinLength(6, {
 		message: 'Login must be at least 6 characters long'
 	})
@@ -22,7 +23,7 @@ export class UpdateUserInput {
 	})
 	password?: string
 
-	@Field(() => Boolean, { nullable: true })
-	@IsBoolean()
-	isAdmin?: boolean
+	@Field(() => String, { defaultValue: 'ADMIN' })
+	@IsEnum(['ADMIN'])
+	role: string
 }

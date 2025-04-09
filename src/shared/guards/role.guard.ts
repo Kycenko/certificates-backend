@@ -1,26 +1,15 @@
-import {
-	CanActivate,
-	ExecutionContext,
-	ForbiddenException,
-	Injectable,
-	UnauthorizedException
-} from '@nestjs/common'
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common'
 import { GqlExecutionContext } from '@nestjs/graphql'
+import { UserRole } from '../base/base.types'
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-	constructor(private readonly requiredRole: 'admin' | 'user') {}
+	constructor(private readonly roles: UserRole[]) {}
 
 	canActivate(context: ExecutionContext): boolean {
-		const ctx = GqlExecutionContext.create(context)
-		const user = ctx.getContext().req.user
+		const ctx = GqlExecutionContext.create(context).getContext()
+		const user = ctx.req.user
 
-		if (!user) throw new UnauthorizedException('User not found')
-
-		if (this.requiredRole === 'admin' && !user.isAdmin) {
-			throw new ForbiddenException('User is not an admin!')
-		}
-
-		return true
+		return this.roles.includes(user.role)
 	}
 }

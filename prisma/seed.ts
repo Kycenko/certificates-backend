@@ -6,7 +6,7 @@ async function main() {
 		data: {
 			login: 'testuser',
 			passwordHash: await hash('Testuser_1'),
-			isAdmin: true
+			role: 'ADMIN'
 		}
 	})
 

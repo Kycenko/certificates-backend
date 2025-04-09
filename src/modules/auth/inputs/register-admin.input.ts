@@ -1,8 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql'
-import { IsBoolean, MaxLength, MinLength } from 'class-validator'
+import { IsEnum, MaxLength, MinLength } from 'class-validator'
 
 @InputType()
-export class RegisterInput {
+export class RegisterAdminInput {
 	@Field(() => String)
 	@MinLength(6, {
 		message: 'Login must be at least 6 characters long'
@@ -21,7 +21,7 @@ export class RegisterInput {
 	})
 	password: string
 
-	@Field(() => Boolean)
-	@IsBoolean()
-	isAdmin: boolean
+	@Field(() => String, { defaultValue: 'ADMIN' })
+	@IsEnum(['ADMIN'])
+	role: string
 }

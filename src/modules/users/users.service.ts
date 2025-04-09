@@ -1,19 +1,49 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
 import { ConflictException, Injectable } from '@nestjs/common'
-import { UpdateUserInput } from './inputs/update-user.input'
+import { UpdateAdminInput } from './inputs/update-admin.input'
+import { UpdateCuratorInput } from './inputs/update-curator.input'
 
 @Injectable()
 export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async update(id: string, updateDto: UpdateUserInput) {
-		const user = await this.getById(id)
-
-		if (!user) throw new ConflictException('User not found')
+	async updateAdmin(id: string, updateDto: UpdateAdminInput) {
+		await this.getById(id)
 
 		return this.prisma.user.update({
 			where: { id },
-			data: updateDto
+			data: {
+				...updateDto,
+				role: 'ADMIN'
+			}
+		})
+	}
+
+	async updateCurator(id: string, updateDto: UpdateCuratorInput) {
+		await this.getById(id)
+
+		return this.prisma.user.update({
+			where: { id },
+			data: {
+				...updateDto,
+				role: 'CURATOR'
+			}
+		})
+	}
+
+	async updateCuratorFullName(id: string, fullName: string) {
+		await this.getById(id)
+
+		return this.prisma.user.update({
+			where: { id },
+			data: {
+				curators: {
+					update: {
+						where: { id },
+						data: { fullName }
+					}
+				}
+			}
 		})
 	}
 
@@ -29,7 +59,12 @@ export class UsersService {
 
 	async getByLogin(login: string) {
 		const user = await this.prisma.user.findUnique({
-			where: { login }
+			where: { login },
+			include: {
+				curators: {
+					include: { group: true }
+				}
+			}
 		})
 
 		if (!user) throw new ConflictException('User not found')

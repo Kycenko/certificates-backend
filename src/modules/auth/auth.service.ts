@@ -9,7 +9,9 @@ import { User } from '@prisma/client'
 import { hash, verify } from 'argon2'
 import { UsersService } from '../users/users.service'
 import { LoginInput } from './inputs/login.input'
-import { RegisterInput } from './inputs/register.input'
+import { RegisterAdminInput } from './inputs/register-admin.input'
+
+import { RegisterCuratorInput } from './inputs/register-curator.input'
 import { AuthModel } from './models/auth.model'
 
 @Injectable()
@@ -20,7 +22,7 @@ export class AuthService {
 		private readonly jwt: JwtService
 	) {}
 
-	async login(dto: LoginInput): Promise<AuthModel> {
+	async login(dto: LoginInput) {
 		const user = await this.usersService.getByLogin(dto.login)
 		if (!user) {
 			throw new UnauthorizedException('Invalid login or password')
@@ -31,10 +33,17 @@ export class AuthService {
 		const tokens = await this.issueAndStoreTokens(user.id)
 		await this.updateLastLogin(user.id)
 
-		return this.buildAuthModel(user, tokens)
+		return {
+			user: {
+				...user,
+				curator: user.role === 'CURATOR' ? user.curators[0] : null
+			},
+			...tokens
+		}
+		// return this.buildAuthModel(user, tokens)
 	}
 
-	async register(dto: RegisterInput): Promise<AuthModel> {
+	async registerAdmin(dto: RegisterAdminInput): Promise<AuthModel> {
 		const existingUser = await this.prisma.user.findUnique({
 			where: { login: dto.login }
 		})
@@ -47,7 +56,35 @@ export class AuthService {
 			data: {
 				login: dto.login,
 				passwordHash: await hash(dto.password),
-				isAdmin: dto.isAdmin
+				role: 'ADMIN'
+			}
+		})
+
+		const tokens = await this.issueAndStoreTokens(newUser.id)
+
+		return this.buildAuthModel(newUser, tokens)
+	}
+
+	async registerCurator(dto: RegisterCuratorInput): Promise<AuthModel> {
+		const existingUser = await this.prisma.user.findUnique({
+			where: { login: dto.login }
+		})
+
+		if (existingUser) {
+			throw new ConflictException('User already exists')
+		}
+
+		const newUser = await this.prisma.user.create({
+			data: {
+				login: dto.login,
+				passwordHash: await hash(dto.password),
+				role: 'CURATOR',
+				curators: {
+					create: {
+						fullName: dto.fullName,
+						groupId: dto.groupId
+					}
+				}
 			}
 		})
 
@@ -132,7 +169,7 @@ export class AuthService {
 			user: {
 				id: user.id,
 				login: user.login,
-				isAdmin: user.isAdmin,
+				role: user.role,
 				createdAt: user.createdAt,
 				updatedAt: user.updatedAt
 			}

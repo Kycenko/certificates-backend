@@ -7,18 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  CURATOR
+}
+
 model User {
   id           String    @id @default(uuid())
   login        String    @unique
   passwordHash String    @map("password_hash")
-  isAdmin      Boolean   @default(false) @map("is_admin")
+  role         UserRole  @default(CURATOR)
   refreshToken String?   @map("refresh_token")
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
+  curators     Curator[]
 
   @@index([login])
   @@map("users")
+}
+
+model Curator {
+  id       String @id @default(uuid())
+  user     User   @relation(fields: [userId], references: [id])
+  fullName String @map("full_name")
+  userId   String @map("user_id")
+
+  groupId String @unique @map("group_id")
+  group   Group  @relation(fields: [groupId], references: [id])
+
+  @@index([fullName])
+  @@map("curators")
 }
 
 model Department {
@@ -55,8 +74,9 @@ model Group {
   updatedAt        DateTime         @updatedAt @map("updated_at")
   students         Student[]
   studentHistories StudentHistory[]
+  curator          Curator?
 
-  @@index([title, courseId])
+  @@index([title])
   @@map("groups")
 }
 

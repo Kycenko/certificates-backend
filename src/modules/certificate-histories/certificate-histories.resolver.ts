@@ -13,7 +13,7 @@ export class CertificateHistoriesResolver {
 	) {}
 
 	@Mutation(() => CertificateHistoryModel, { name: 'createCertificateHistory' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: CertificateHistoryInput) {
 		return this.certificateHistoriesService.create(data)
 	}
@@ -21,13 +21,13 @@ export class CertificateHistoriesResolver {
 	@Query(() => [CertificateHistoryModel], {
 		name: 'getAllCertificateHistories'
 	})
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(@Args('certificateId') certificateId: string) {
 		return this.certificateHistoriesService.getAll(certificateId)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeAllCertificateHistories' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll(@Args('certificateId') certificateId: string) {
 		return this.certificateHistoriesService.removeAll(certificateId)
 	}

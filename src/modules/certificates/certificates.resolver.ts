@@ -12,13 +12,13 @@ export class CertificatesResolver {
 	constructor(private readonly certificatesService: CertificatesService) {}
 
 	@Mutation(() => CertificateModel, { name: 'createCertificate' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: CertificateInput) {
 		return this.certificatesService.create(data)
 	}
 
 	@Query(() => [CertificateModel], { name: 'getAllCertificates' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(
 		@Args('params', { nullable: true }) params?: CertificateParamsInput
 	) {
@@ -26,13 +26,13 @@ export class CertificatesResolver {
 	}
 
 	@Query(() => CertificateModel, { name: 'getCertificateById' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.certificatesService.getById(id)
 	}
 
 	@Mutation(() => CertificateModel, { name: 'updateCertificate' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async update(
 		@Args('id') id: string,
 		@Args('data') data: UpdateCertificateInput
@@ -41,19 +41,19 @@ export class CertificatesResolver {
 	}
 
 	@Mutation(() => Boolean, { name: 'removeCertificate' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async remove(@Args('id') id: string) {
 		return this.certificatesService.remove(id)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeManyCertificates' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.certificatesService.removeMany(params.ids)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeAllCertificates' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll() {
 		return this.certificatesService.removeAll()
 	}

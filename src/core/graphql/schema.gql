@@ -84,6 +84,12 @@ input CourseParamsInput {
   orderBy: String! = "asc"
 }
 
+type CuratorModel {
+  fullName: String!
+  group: GroupModel!
+  groupId: String!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -115,6 +121,7 @@ type GroupModel {
   course: CourseModel
   courseId: String
   createdAt: DateTime!
+  curator: CuratorModel
   id: String!
   students: [StudentModel!]
   title: String!
@@ -163,7 +170,8 @@ type Mutation {
   getNewTokens(refreshToken: String!, userId: String!): AuthModel!
   login(data: LoginInput!): AuthModel!
   logout: Boolean!
-  register(data: RegisterInput!): AuthModel!
+  registerAdmin(data: RegisterAdminInput!): AuthModel!
+  registerCurator(data: RegisterCuratorInput!): AuthModel!
   removeAllCertificateHistories(certificateId: String!): Boolean!
   removeAllCertificates: Boolean!
   removeAllCourses: Boolean!
@@ -188,14 +196,16 @@ type Mutation {
   removePhysicalEducation(id: String!): Boolean!
   removeStudent(id: String!): Boolean!
   removeUser(id: String!): Boolean!
+  updateAdmin(id: String!, updateDto: UpdateAdminInput!): UserModel!
   updateCertificate(data: UpdateCertificateInput!, id: String!): CertificateModel!
   updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
+  updateCurator(id: String!, updateDto: UpdateCuratorInput!): UserModel!
+  updateCuratorFullName(fullName: String!, id: String!): UserModel!
   updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
   updateGroup(data: GroupInput!, id: String!): GroupModel!
   updateHealthGroup(data: HealthGroupInput!, id: String!): HealthGroupModel!
   updatePhysicalEducation(data: PhysicalEducationInput!, id: String!): PhysicalEducationModel!
   updateStudent(data: UpdateStudentInput!, id: String!): StudentModel!
-  updateUser(id: String!, updateDto: UpdateUserInput!): UserModel!
 }
 
 input PhysicalEducationInput {
@@ -240,10 +250,18 @@ type Query {
   getUserByLogin(login: String!): UserModel!
 }
 
-input RegisterInput {
-  isAdmin: Boolean!
+input RegisterAdminInput {
   login: String!
   password: String!
+  role: String! = "ADMIN"
+}
+
+input RegisterCuratorInput {
+  fullName: String!
+  groupId: String!
+  login: String!
+  password: String!
+  role: String! = "TEACHER"
 }
 
 input StudentHistoryInput {
@@ -297,6 +315,12 @@ input StudentParamsInput {
   page: Float! = 1
 }
 
+input UpdateAdminInput {
+  login: String
+  password: String
+  role: String! = "ADMIN"
+}
+
 input UpdateCertificateInput {
   finishDate: DateTime
   healthGroupId: String
@@ -310,6 +334,14 @@ input UpdateCourseInput {
   number: String
 }
 
+input UpdateCuratorInput {
+  fullName: String
+  groupId: String
+  login: String
+  password: String
+  role: String! = "TEACHER"
+}
+
 input UpdateStudentInput {
   birthDate: DateTime
   firstName: String
@@ -319,16 +351,11 @@ input UpdateStudentInput {
   secondName: String
 }
 
-input UpdateUserInput {
-  isAdmin: Boolean
-  login: String
-  password: String
-}
-
 type UserModel {
   createdAt: DateTime!
+  curator: CuratorModel
   id: String!
-  isAdmin: Boolean!
   login: String!
+  role: String!
   updatedAt: DateTime!
 }

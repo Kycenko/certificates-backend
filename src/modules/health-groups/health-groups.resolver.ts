@@ -11,13 +11,13 @@ import { HealthGroupModel } from './models/health-group.model'
 export class HealthGroupsResolver {
 	constructor(private readonly healthGroupsService: HealthGroupsService) {}
 	@Mutation(() => HealthGroupModel, { name: 'createHealthGroup' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: HealthGroupInput) {
 		return this.healthGroupsService.create(data)
 	}
 
 	@Query(() => [HealthGroupModel], { name: 'getAllHealthGroups' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(
 		@Args('params', { nullable: true }) params?: HealthGroupParamsInput
 	) {
@@ -25,37 +25,37 @@ export class HealthGroupsResolver {
 	}
 
 	@Query(() => HealthGroupModel, { name: 'getHealthGroupById' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.healthGroupsService.getById(id)
 	}
 
 	@Query(() => HealthGroupModel, { name: 'getHealthGroupByTitle' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getByTitle(@Args('title') title: string) {
 		return this.healthGroupsService.getByTitle(title)
 	}
 
 	@Mutation(() => HealthGroupModel, { name: 'updateHealthGroup' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async update(@Args('id') id: string, @Args('data') data: HealthGroupInput) {
 		return this.healthGroupsService.update(id, data)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeHealthGroup' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async remove(@Args('id') id: string) {
 		return this.healthGroupsService.remove(id)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeManyHealthGroups' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.healthGroupsService.removeMany(params.ids)
 	}
 
 	@Mutation(() => HealthGroupModel, { name: 'removeAllHealthGroup' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll() {
 		return this.healthGroupsService.removeAll()
 	}

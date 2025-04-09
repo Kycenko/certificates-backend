@@ -11,13 +11,13 @@ export class DepartmentsResolver {
 	constructor(private readonly departmentsService: DepartmentsService) {}
 
 	@Mutation(() => DepartmentModel, { name: 'createDepartment' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: DepartmentInput) {
 		return this.departmentsService.create(data)
 	}
 
 	@Query(() => [DepartmentModel], { name: 'getAllDepartments' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(
 		@Args('params', { nullable: true }) params?: DepartmentParamsInput
 	) {
@@ -25,37 +25,37 @@ export class DepartmentsResolver {
 	}
 
 	@Query(() => DepartmentModel, { name: 'getDepartmentById' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.departmentsService.getById(id)
 	}
 
 	@Query(() => DepartmentModel, { name: 'getDepartmentByTitle' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getByTitle(@Args('title') title: string) {
 		return this.departmentsService.getByTitle(title)
 	}
 
 	@Mutation(() => DepartmentModel, { name: 'updateDepartment' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async update(@Args('id') id: string, @Args('data') data: DepartmentInput) {
 		return this.departmentsService.update(id, data)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeDepartment' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async remove(@Args('id') id: string) {
 		return this.departmentsService.remove(id)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeManyDepartments' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.departmentsService.removeMany(params.ids)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeAllDepartments' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll() {
 		return this.departmentsService.removeAll()
 	}

@@ -12,43 +12,43 @@ export class CoursesResolver {
 	constructor(private readonly coursesService: CoursesService) {}
 
 	@Mutation(() => CourseModel, { name: 'createCourse' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: CourseInput) {
 		return this.coursesService.create(data)
 	}
 
 	@Query(() => [CourseModel], { name: 'getAllCourses' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(@Args('params', { nullable: true }) params?: CourseParamsInput) {
 		return this.coursesService.getAll({ params })
 	}
 
 	@Query(() => CourseModel, { name: 'getCourseById' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.coursesService.getById(id)
 	}
 
 	@Mutation(() => CourseModel, { name: 'updateCourse' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async update(@Args('id') id: string, @Args('data') data: UpdateCourseInput) {
 		return this.coursesService.update(id, data)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeCourse' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async remove(@Args('id') id: string) {
 		return this.coursesService.remove(id)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeManyCourses' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.coursesService.removeMany(params.ids)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeAllCourses' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll() {
 		return this.coursesService.removeAll()
 	}

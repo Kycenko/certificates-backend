@@ -11,19 +11,19 @@ export class StudentHistoriesResolver {
 	) {}
 
 	@Mutation(() => StudentHistoryModel, { name: 'createStudentHistory' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: StudentHistoryInput) {
 		return this.studentHistoriesService.create(data)
 	}
 
 	@Query(() => [StudentHistoryModel], { name: 'getAllStudentHistories' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(@Args('studentId') studentId: string) {
 		return this.studentHistoriesService.getAll(studentId)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeAllStudentHistory' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll(@Args('studentId') studentId: string) {
 		return this.studentHistoriesService.removeAll(studentId)
 	}
