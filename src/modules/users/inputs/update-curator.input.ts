@@ -29,8 +29,8 @@ export class UpdateCuratorInput {
 
 	@Field(() => String, { nullable: true })
 	@IsOptional()
-	@MinLength(6, {
-		message: 'Full name must be at least 6 characters long'
+	@MinLength(5, {
+		message: 'Full name must be at least 5 characters long'
 	})
 	@MaxLength(50, {
 		message: 'Full name be at most 50 characters long'

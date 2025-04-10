@@ -23,7 +23,6 @@ export class GroupsResolver {
 	}
 
 	@Query(() => GroupModel, { name: 'getGroupById' })
-	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.groupsService.getById(id)
 	}

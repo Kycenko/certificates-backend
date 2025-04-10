@@ -175,6 +175,7 @@ type Mutation {
   removeAllCertificateHistories(certificateId: String!): Boolean!
   removeAllCertificates: Boolean!
   removeAllCourses: Boolean!
+  removeAllCurators: Boolean!
   removeAllDepartments: Boolean!
   removeAllGroups: Boolean!
   removeAllHealthGroup: HealthGroupModel!
@@ -183,11 +184,13 @@ type Mutation {
   removeAllStudents: Boolean!
   removeCertificate(id: String!): Boolean!
   removeCourse(id: String!): Boolean!
+  removeCurator(id: String!): Boolean!
   removeDepartment(id: String!): Boolean!
   removeGroup(id: String!): Boolean!
   removeHealthGroup(id: String!): Boolean!
   removeManyCertificates(ids: [String!]!): Boolean!
   removeManyCourses(ids: [String!]!): Boolean!
+  removeManyCurators(ids: [String!]!): Boolean!
   removeManyDepartments(ids: [String!]!): Boolean!
   removeManyGroups(ids: [String!]!): Boolean!
   removeManyHealthGroups(ids: [String!]!): Boolean!
@@ -195,7 +198,6 @@ type Mutation {
   removeManyStudents(ids: [String!]!): Boolean!
   removePhysicalEducation(id: String!): Boolean!
   removeStudent(id: String!): Boolean!
-  removeUser(id: String!): Boolean!
   updateAdmin(id: String!, updateDto: UpdateAdminInput!): UserModel!
   updateCertificate(data: UpdateCertificateInput!, id: String!): CertificateModel!
   updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
@@ -229,6 +231,7 @@ type Query {
   getAllCertificateHistories(certificateId: String!): [CertificateHistoryModel!]!
   getAllCertificates(params: CertificateParamsInput): [CertificateModel!]!
   getAllCourses(params: CourseParamsInput): [CourseModel!]!
+  getAllCurators: [UserModel!]!
   getAllDepartments(params: DepartmentParamsInput): [DepartmentModel!]!
   getAllGroups(params: GroupParamsInput): [GroupModel!]!
   getAllHealthGroups(params: HealthGroupParamsInput): [HealthGroupModel!]!

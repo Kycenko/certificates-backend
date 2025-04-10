@@ -47,6 +47,20 @@ export class UsersService {
 		})
 	}
 
+	async getAllCurators() {
+		return this.prisma.user.findMany({
+			where: {
+				role: 'CURATOR'
+			},
+
+			include: {
+				curators: {
+					include: { group: true }
+				}
+			}
+		})
+	}
+
 	async getById(id: string) {
 		const user = await this.prisma.user.findUnique({
 			where: { id }
@@ -72,13 +86,31 @@ export class UsersService {
 		return user
 	}
 
-	async remove(id: string) {
+	async removeCurator(id: string) {
 		await this.getById(id)
 
-		const deletedUser = await this.prisma.user.delete({
-			where: { id }
+		const deletedCurator = await this.prisma.user.delete({
+			where: { id, role: 'CURATOR' }
 		})
-		if (!deletedUser) return false
+		if (!deletedCurator) return false
+
+		return true
+	}
+
+	async removeManyCurators(ids: string[]) {
+		const deletedCurators = await this.prisma.user.deleteMany({
+			where: { id: { in: ids }, role: 'CURATOR' }
+		})
+		if (!deletedCurators) return false
+
+		return true
+	}
+
+	async removeAllCurators() {
+		const deletedCurators = await this.prisma.user.deleteMany({
+			where: { role: 'CURATOR' }
+		})
+		if (!deletedCurators) return false
 
 		return true
 	}

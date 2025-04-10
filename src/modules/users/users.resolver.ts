@@ -1,3 +1,4 @@
+import { RemoveManyInput } from '@/shared/base/remove-many.input'
 import { AuthRole } from '@/shared/decorators/role.decorator'
 import { CurrentUser } from '@/shared/decorators/user.decorator'
 import { GqlAuthGuard } from '@/shared/guards/gql-auth.guard'
@@ -11,6 +12,12 @@ import { UsersService } from './users.service'
 @Resolver()
 export class UsersResolver {
 	constructor(private readonly usersService: UsersService) {}
+
+	@Query(() => [UserModel], { name: 'getAllCurators' })
+	@AuthRole('ADMIN')
+	async getAllCurators() {
+		return this.usersService.getAllCurators()
+	}
 
 	@Mutation(() => UserModel, { name: 'updateAdmin' })
 	@AuthRole('ADMIN')
@@ -31,7 +38,7 @@ export class UsersResolver {
 	}
 
 	@Mutation(() => UserModel, { name: 'updateCuratorFullName' })
-	@AuthRole('ADMIN', 'CURATOR')
+	@AuthRole('ADMIN')
 	async updateCuratorFullName(
 		@Args('id') id: string,
 		@Args('fullName') fullName: string
@@ -40,7 +47,7 @@ export class UsersResolver {
 	}
 
 	@Query(() => UserModel, { name: 'getProfile' })
-	@AuthRole('ADMIN', 'CURATOR')
+	@AuthRole('ADMIN')
 	@UseGuards(GqlAuthGuard)
 	async me(@CurrentUser() user: UserModel) {
 		return user
@@ -52,9 +59,21 @@ export class UsersResolver {
 		return this.usersService.getByLogin(login)
 	}
 
-	@Mutation(() => Boolean, { name: 'removeUser' })
+	@Mutation(() => Boolean, { name: 'removeManyCurators' })
 	@AuthRole('ADMIN')
-	async remove(@Args('id') id: string) {
-		return this.usersService.remove(id)
+	async removeManyCurators(@Args() params: RemoveManyInput) {
+		return this.usersService.removeManyCurators(params.ids)
+	}
+
+	@Mutation(() => Boolean, { name: 'removeAllCurators' })
+	@AuthRole('ADMIN')
+	async removeAllCurators() {
+		return this.usersService.removeAllCurators()
+	}
+
+	@Mutation(() => Boolean, { name: 'removeCurator' })
+	@AuthRole('ADMIN')
+	async removeCurator(@Args('id') id: string) {
+		return this.usersService.removeCurator(id)
 	}
 }
