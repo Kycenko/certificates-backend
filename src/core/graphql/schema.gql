@@ -64,6 +64,14 @@ input CertificateParamsInput {
   studentLastName: String
 }
 
+type CountStatisticsModel {
+  courses: Float!
+  curators: Float!
+  departments: Float!
+  groups: Float!
+  students: Float!
+}
+
 input CourseInput {
   departmentId: String!
   number: String!
@@ -85,7 +93,7 @@ input CourseParamsInput {
 }
 
 type CuratorModel {
-  fullName: String!
+  displayedName: String!
   group: GroupModel!
   groupId: String!
 }
@@ -202,7 +210,7 @@ type Mutation {
   updateCertificate(data: UpdateCertificateInput!, id: String!): CertificateModel!
   updateCourse(data: UpdateCourseInput!, id: String!): CourseModel!
   updateCurator(id: String!, updateDto: UpdateCuratorInput!): UserModel!
-  updateCuratorFullName(fullName: String!, id: String!): UserModel!
+  updateCuratorDisplayedName(displayedName: String!, id: String!): UserModel!
   updateDepartment(data: DepartmentInput!, id: String!): DepartmentModel!
   updateGroup(data: GroupInput!, id: String!): GroupModel!
   updateHealthGroup(data: HealthGroupInput!, id: String!): HealthGroupModel!
@@ -239,6 +247,7 @@ type Query {
   getAllStudentHistories(studentId: String!): [StudentHistoryModel!]!
   getAllStudents(params: StudentParamsInput): [StudentModel!]!
   getCertificateById(id: String!): CertificateModel!
+  getCountStatistics: CountStatisticsModel!
   getCourseById(id: String!): CourseModel!
   getDepartmentById(id: String!): DepartmentModel!
   getDepartmentByTitle(title: String!): DepartmentModel!
@@ -260,7 +269,7 @@ input RegisterAdminInput {
 }
 
 input RegisterCuratorInput {
-  fullName: String!
+  displayedName: String!
   groupId: String!
   login: String!
   password: String!
@@ -338,7 +347,7 @@ input UpdateCourseInput {
 }
 
 input UpdateCuratorInput {
-  fullName: String
+  displayedName: String
   groupId: String
   login: String
   password: String

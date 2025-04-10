@@ -21,22 +21,21 @@ model User {
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
-  curators     Curator[]
+  curator      Curator?
 
   @@index([login])
   @@map("users")
 }
 
 model Curator {
-  id       String @id @default(uuid())
-  user     User   @relation(fields: [userId], references: [id])
-  fullName String @map("full_name")
-  userId   String @map("user_id")
+  id            String @id @default(uuid())
+  user          User   @relation(fields: [userId], references: [id])
+  displayedName String @map("displayed_name")
+  userId        String @unique @map("user_id")
+  groupId       String @unique @map("group_id")
+  group         Group  @relation(fields: [groupId], references: [id])
 
-  groupId String @unique @map("group_id")
-  group   Group  @relation(fields: [groupId], references: [id])
-
-  @@index([fullName])
+  @@index([displayedName])
   @@map("curators")
 }
 

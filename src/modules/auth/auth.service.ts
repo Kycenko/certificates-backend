@@ -36,7 +36,7 @@ export class AuthService {
 		return {
 			user: {
 				...user,
-				curator: user.role === 'CURATOR' ? user.curators[0] : null
+				curator: user.role === 'CURATOR' ? user.curator : null
 			},
 			...tokens
 		}
@@ -79,9 +79,10 @@ export class AuthService {
 				login: dto.login,
 				passwordHash: await hash(dto.password),
 				role: 'CURATOR',
-				curators: {
+
+				curator: {
 					create: {
-						fullName: dto.fullName,
+						displayedName: dto.displayedName,
 						groupId: dto.groupId
 					}
 				}

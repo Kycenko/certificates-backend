@@ -37,13 +37,13 @@ export class UsersResolver {
 		return this.usersService.updateCurator(id, data)
 	}
 
-	@Mutation(() => UserModel, { name: 'updateCuratorFullName' })
+	@Mutation(() => UserModel, { name: 'updateCuratorDisplayedName' })
 	@AuthRole('ADMIN')
-	async updateCuratorFullName(
+	async updateCuratorDisplayedName(
 		@Args('id') id: string,
-		@Args('fullName') fullName: string
+		@Args('displayedName') displayedName: string
 	) {
-		return this.usersService.updateCuratorFullName(id, fullName)
+		return this.usersService.updateCuratorDisplayedName(id, displayedName)
 	}
 
 	@Query(() => UserModel, { name: 'getProfile' })

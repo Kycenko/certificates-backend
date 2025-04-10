@@ -1,4 +1,5 @@
 import { ValidationPipe } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { useContainer } from 'class-validator'
 import { AppModule } from './core/app.module'
@@ -8,6 +9,8 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 
 	app.useLogger(new CustomLogger())
+
+	const configService = app.get(ConfigService)
 
 	app.enableCors({ credentials: true })
 
@@ -19,6 +22,6 @@ async function bootstrap() {
 		})
 	)
 
-	await app.listen(process.env.PORT ?? 7777)
+	await app.listen(configService.get<number>('PORT') ?? 7777)
 }
 bootstrap()

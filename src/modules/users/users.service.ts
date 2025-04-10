@@ -31,16 +31,16 @@ export class UsersService {
 		})
 	}
 
-	async updateCuratorFullName(id: string, fullName: string) {
+	async updateCuratorDisplayedName(id: string, displayedName: string) {
 		await this.getById(id)
 
 		return this.prisma.user.update({
 			where: { id },
 			data: {
-				curators: {
+				curator: {
 					update: {
 						where: { id },
-						data: { fullName }
+						data: { displayedName }
 					}
 				}
 			}
@@ -49,12 +49,9 @@ export class UsersService {
 
 	async getAllCurators() {
 		return this.prisma.user.findMany({
-			where: {
-				role: 'CURATOR'
-			},
-
+			where: { role: 'CURATOR' },
 			include: {
-				curators: {
+				curator: {
 					include: { group: true }
 				}
 			}
@@ -75,7 +72,7 @@ export class UsersService {
 		const user = await this.prisma.user.findUnique({
 			where: { login },
 			include: {
-				curators: {
+				curator: {
 					include: { group: true }
 				}
 			}

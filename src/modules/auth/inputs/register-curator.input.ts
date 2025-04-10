@@ -27,12 +27,12 @@ export class RegisterCuratorInput {
 
 	@Field(() => String)
 	@MinLength(5, {
-		message: 'Full name must be at least 5 characters long'
+		message: 'Displayed name must be at least 5 characters long'
 	})
 	@MaxLength(50, {
-		message: 'Full name be at most 50 characters long'
+		message: 'Displayed name be at most 50 characters long'
 	})
-	fullName: string
+	displayedName: string
 
 	@Field(() => String)
 	groupId: string

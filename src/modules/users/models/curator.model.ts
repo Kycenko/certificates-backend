@@ -4,7 +4,7 @@ import { Field, ObjectType } from '@nestjs/graphql'
 @ObjectType()
 export class CuratorModel {
 	@Field(() => String)
-	fullName: string
+	displayedName: string
 
 	@Field(() => String)
 	groupId: string
