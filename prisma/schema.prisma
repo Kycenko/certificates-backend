@@ -29,11 +29,11 @@ model User {
 
 model Curator {
   id            String @id @default(uuid())
-  user          User   @relation(fields: [userId], references: [id])
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   displayedName String @map("displayed_name")
   userId        String @unique @map("user_id")
   groupId       String @unique @map("group_id")
-  group         Group  @relation(fields: [groupId], references: [id])
+  group         Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([displayedName])
   @@map("curators")

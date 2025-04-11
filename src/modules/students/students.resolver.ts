@@ -18,7 +18,6 @@ export class StudentsResolver {
 	}
 
 	@Query(() => [StudentModel], { name: 'getAllStudents' })
-	@AuthRole('ADMIN')
 	async getAll(
 		@Args('params', { nullable: true }) params?: StudentParamsInput
 	) {
@@ -26,7 +25,6 @@ export class StudentsResolver {
 	}
 
 	@Query(() => StudentModel, { name: 'getStudentById' })
-	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.studentsService.getById(id)
 	}
