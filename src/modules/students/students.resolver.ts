@@ -24,6 +24,11 @@ export class StudentsResolver {
 		return this.studentsService.getAll({ params })
 	}
 
+	@Query(() => [StudentModel], { name: 'getAllStudentsByLastName' })
+	async getAllStudentsByLastName(@Args('lastName') lastName: string) {
+		return this.studentsService.getAllStudentsByLastName(lastName)
+	}
+
 	@Query(() => StudentModel, { name: 'getStudentById' })
 	async getById(@Args('id') id: string) {
 		return this.studentsService.getById(id)
