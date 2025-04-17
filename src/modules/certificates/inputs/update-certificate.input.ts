@@ -1,16 +1,5 @@
-import { Field, InputType } from '@nestjs/graphql'
+import { InputType, PartialType } from '@nestjs/graphql'
+import { CertificateInput } from './certificate.input'
 
 @InputType()
-export class UpdateCertificateInput {
-	@Field(() => Date, { nullable: true })
-	// @Validate(CertificateDateValidator)
-	startDate?: Date
-	@Field(() => Date, { nullable: true })
-	finishDate?: Date
-	@Field(() => String, { nullable: true })
-	studentId?: string
-	@Field(() => String, { nullable: true })
-	healthGroupId?: string
-	@Field(() => String, { nullable: true })
-	physicalEducationId?: string
-}
+export class UpdateCertificateInput extends PartialType(CertificateInput) {}

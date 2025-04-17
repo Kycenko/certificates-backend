@@ -7,18 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  CURATOR
+}
+
 model User {
   id           String    @id @default(uuid())
   login        String    @unique
   passwordHash String    @map("password_hash")
-  isAdmin      Boolean   @default(false) @map("is_admin")
+  role         UserRole  @default(CURATOR)
   refreshToken String?   @map("refresh_token")
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
+  curator      Curator?
 
   @@index([login])
   @@map("users")
+}
+
+model Curator {
+  id            String @id @default(uuid())
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayedName String @map("displayed_name")
+  userId        String @unique @map("user_id")
+  groupId       String @unique @map("group_id")
+  group         Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([displayedName])
+  @@map("curators")
 }
 
 model Department {
@@ -47,103 +65,70 @@ model Course {
 }
 
 model Group {
-  id               String           @id @default(uuid())
-  title            String           @unique
-  courseId         String?          @map("course_id")
-  course           Course?          @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt        DateTime         @default(now()) @map("created_at")
-  updatedAt        DateTime         @updatedAt @map("updated_at")
-  students         Student[]
-  studentHistories StudentHistory[]
+  id        String    @id @default(uuid())
+  title     String    @unique
+  courseId  String?   @map("course_id")
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  students  Student[]
+  curator   Curator?
 
-  @@index([title, courseId])
+  @@index([title])
   @@map("groups")
 }
 
 model Student {
-  id               String           @id @default(uuid())
-  firstName        String           @map("first_name")
-  lastName         String           @map("last_name")
-  secondName       String?          @map("second_name")
-  birthDate        DateTime         @map("birth_date")
-  groupId          String?          @map("group_id")
-  isExpelled       Boolean          @default(false) @map("is_expelled")
-  group            Group?           @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  createdAt        DateTime         @default(now()) @map("created_at")
-  updatedAt        DateTime         @updatedAt @map("updated_at")
-  certificates     Certificate[]
-  studentHistories StudentHistory[]
+  id           String        @id @default(uuid())
+  firstName    String        @map("first_name")
+  lastName     String        @map("last_name")
+  secondName   String?       @map("second_name")
+  birthDate    DateTime      @map("birth_date")
+  groupId      String?       @map("group_id")
+  isExpelled   Boolean       @default(false) @map("is_expelled")
+  group        Group?        @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  certificates Certificate[]
 
   @@index([firstName, lastName])
   @@map("students")
 }
 
 model HealthGroup {
-  id                   String               @id @default(uuid())
-  title                String               @unique
-  createdAt            DateTime             @default(now()) @map("created_at")
-  updatedAt            DateTime             @updatedAt @map("updated_at")
-  certificates         Certificate[]
-  certificateHistories CertificateHistory[]
+  id           String        @id @default(uuid())
+  title        String        @unique
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  certificates Certificate[]
 
   @@index([title])
   @@map("health_groups")
 }
 
 model PhysicalEducation {
-  id        String   @id @default(uuid())
-  title     String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  certificates         Certificate[]
-  certificateHistories CertificateHistory[]
+  id           String        @id @default(uuid())
+  title        String        @unique
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  certificates Certificate[]
 
   @@index([title])
   @@map("physical_educations")
 }
 
 model Certificate {
-  id                  String               @id @default(uuid())
-  startDate           DateTime             @map("start_date")
-  finishDate          DateTime             @map("finish_date")
-  studentId           String               @map("student_id")
-  healthGroupId       String               @map("health_group_id")
-  physicalEducationId String               @map("physical_education_id")
-  createdAt           DateTime             @default(now()) @map("created_at")
-  updatedAt           DateTime             @updatedAt @map("updated_at")
-  certificateHistory  CertificateHistory[]
-  healthGroup         HealthGroup          @relation(fields: [healthGroupId], references: [id], onDelete: SetNull)
-  physicalEducation   PhysicalEducation    @relation(fields: [physicalEducationId], references: [id], onDelete: SetNull)
-  student             Student              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  id                  String            @id @default(uuid())
+  startDate           DateTime          @map("start_date")
+  finishDate          DateTime          @map("finish_date")
+  studentId           String            @map("student_id")
+  healthGroupId       String            @map("health_group_id")
+  physicalEducationId String            @map("physical_education_id")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+  healthGroup         HealthGroup       @relation(fields: [healthGroupId], references: [id], onDelete: SetNull)
+  physicalEducation   PhysicalEducation @relation(fields: [physicalEducationId], references: [id], onDelete: SetNull)
+  student             Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("certificates")
-}
-
-model CertificateHistory {
-  id                  String             @id @default(uuid())
-  startDate           DateTime           @map("start_date")
-  finishDate          DateTime           @map("finish_date")
-  createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt @map("updated_at")
-  healthGroupId       String?            @map("health_group_id")
-  physicalEducationId String?            @map("physical_education_id")
-  certificateId       String             @map("certificate_id")
-  healthGroup         HealthGroup?       @relation(fields: [healthGroupId], references: [id])
-  certificate         Certificate        @relation(fields: [certificateId], references: [id], onDelete: Cascade)
-  physicalEducation   PhysicalEducation? @relation(fields: [physicalEducationId], references: [id], onDelete: Cascade)
-
-  @@map("certificate_histories")
-}
-
-model StudentHistory {
-  id        String   @id @default(uuid())
-  studentId String   @map("student_id")
-  groupId   String?  @map("group_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  group     Group?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  @@map("student_histories")
 }

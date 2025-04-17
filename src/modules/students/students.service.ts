@@ -3,7 +3,6 @@ import { RedisService } from '@/core/redis/redis.service'
 import { BaseService } from '@/shared/base/base.service'
 import { ConflictException, Injectable } from '@nestjs/common'
 import { Student } from '@prisma/client'
-import { StudentHistoriesService } from '../student-histories/student-histories.service'
 import { StudentInput } from './inputs/student.input'
 import { StudentParamsInput } from './inputs/student.params.input'
 import { UpdateStudentInput } from './inputs/update-student.input'
@@ -15,7 +14,7 @@ export class StudentsService extends BaseService<
 > {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly histories: StudentHistoriesService,
+
 		private readonly redis: RedisService
 	) {
 		super(prisma, 'Student')
@@ -48,8 +47,8 @@ export class StudentsService extends BaseService<
 	async getAll({ params }: { params?: StudentParamsInput }) {
 		try {
 			const {
-				page = 1,
-				limit = 10,
+				// page = 1,
+				// limit = 10,
 				lastName,
 				departmentTitle,
 				courseNumber,
@@ -57,7 +56,7 @@ export class StudentsService extends BaseService<
 				isExpelled,
 				orderBy
 			} = params || {}
-			const skipCount = (page - 1) * limit
+			// const skipCount = (page - 1) * limit
 
 			this.logger.log(
 				`Fetching students with params: ${JSON.stringify(params)}`
@@ -100,9 +99,10 @@ export class StudentsService extends BaseService<
 						}
 					},
 					isExpelled: isExpelled ?? undefined
-				},
-				skip: skipCount,
-				take: limit
+				}
+
+				// skip: skipCount,
+				// take: limit
 			})
 
 			if (!students) throw new ConflictException('Students not found')
@@ -119,6 +119,28 @@ export class StudentsService extends BaseService<
 			throw error
 		}
 	}
+
+	async getAllStudentsByLastName(lastName: string) {
+		try {
+			const students = await this.prisma.student.findMany({
+				where: { lastName: { contains: lastName, mode: 'insensitive' } },
+				orderBy: { lastName: 'asc' },
+				include: { group: true }
+			})
+
+			if (!students) throw new ConflictException('Students not found')
+			this.logger.log(`Found ${students.length} students`)
+
+			return students
+		} catch (error) {
+			this.logger.error(
+				`Error fetching students: ${error.message}`,
+				error.stack
+			)
+			throw error
+		}
+	}
+
 	async getById(id: string) {
 		try {
 			this.logger.log(`Fetching student by ID: ${id}`)
@@ -159,10 +181,6 @@ export class StudentsService extends BaseService<
 	async update(id: string, data: UpdateStudentInput) {
 		const updated = await super.update(id, data)
 
-		await this.histories.create({
-			studentId: id,
-			groupId: data.groupId
-		})
 		await this.redis.del('students')
 		return updated
 	}

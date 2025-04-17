@@ -13,13 +13,13 @@ export class PhysicalEducationsResolver {
 	) {}
 
 	@Mutation(() => PhysicalEducationModel, { name: 'createPhysicalEducation' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async create(@Args('data') data: PhysicalEducationInput) {
 		return this.physicalEducationsService.create(data)
 	}
 
 	@Query(() => [PhysicalEducationModel], { name: 'getAllPhysicalEducations' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getAll(
 		@Args('params', { nullable: true }) params?: PhysicalEducationParamsInput
 	) {
@@ -27,19 +27,19 @@ export class PhysicalEducationsResolver {
 	}
 
 	@Query(() => PhysicalEducationModel, { name: 'getPhysicalEducationById' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getById(@Args('id') id: string) {
 		return this.physicalEducationsService.getById(id)
 	}
 
 	@Query(() => PhysicalEducationModel, { name: 'getPhysicalEducationByTitle' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async getByTitle(@Args('title') title: string) {
 		return this.physicalEducationsService.getByTitle(title)
 	}
 
 	@Mutation(() => PhysicalEducationModel, { name: 'updatePhysicalEducation' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async update(
 		@Args('id') id: string,
 		@Args('data') data: PhysicalEducationInput
@@ -48,19 +48,19 @@ export class PhysicalEducationsResolver {
 	}
 
 	@Mutation(() => Boolean, { name: 'removePhysicalEducation' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async remove(@Args('id') id: string) {
 		return this.physicalEducationsService.remove(id)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeManyPhysicalEducations' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeMany(@Args() params: RemoveManyInput) {
 		return this.physicalEducationsService.removeMany(params.ids)
 	}
 
 	@Mutation(() => Boolean, { name: 'removeAllPhysicalEducations' })
-	@AuthRole('admin')
+	@AuthRole('ADMIN')
 	async removeAll() {
 		return this.physicalEducationsService.removeAll()
 	}

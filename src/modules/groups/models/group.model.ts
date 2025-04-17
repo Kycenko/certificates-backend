@@ -1,5 +1,7 @@
 import { CourseModel } from '@/modules/courses/models/course.model'
 import { StudentModel } from '@/modules/students/models/student.model'
+import { CuratorModel } from '@/modules/users/models/curator.model'
+
 import { BaseModel } from '@/shared/base/base.model'
 import { Field, ObjectType } from '@nestjs/graphql'
 
@@ -16,4 +18,7 @@ export class GroupModel extends BaseModel {
 
 	@Field(() => [StudentModel], { nullable: true })
 	students?: StudentModel[]
+
+	@Field(() => CuratorModel, { nullable: true })
+	curator?: CuratorModel
 }

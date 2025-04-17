@@ -1,19 +1,60 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
 import { ConflictException, Injectable } from '@nestjs/common'
-import { UpdateUserInput } from './inputs/update-user.input'
+import { UpdateAdminInput } from './inputs/update-admin.input'
+import { UpdateCuratorInput } from './inputs/update-curator.input'
 
 @Injectable()
 export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async update(id: string, updateDto: UpdateUserInput) {
-		const user = await this.getById(id)
-
-		if (!user) throw new ConflictException('User not found')
+	async updateAdmin(id: string, updateDto: UpdateAdminInput) {
+		await this.getById(id)
 
 		return this.prisma.user.update({
 			where: { id },
-			data: updateDto
+			data: {
+				...updateDto,
+				role: 'ADMIN'
+			}
+		})
+	}
+
+	async updateCurator(id: string, updateDto: UpdateCuratorInput) {
+		await this.getById(id)
+
+		return this.prisma.user.update({
+			where: { id },
+			data: {
+				...updateDto,
+				role: 'CURATOR'
+			}
+		})
+	}
+
+	async updateCuratorDisplayedName(id: string, displayedName: string) {
+		await this.getById(id)
+
+		return this.prisma.user.update({
+			where: { id },
+			data: {
+				curator: {
+					update: {
+						where: { id },
+						data: { displayedName }
+					}
+				}
+			}
+		})
+	}
+
+	async getAllCurators() {
+		return this.prisma.user.findMany({
+			where: { role: 'CURATOR' },
+			include: {
+				curator: {
+					include: { group: true }
+				}
+			}
 		})
 	}
 
@@ -29,7 +70,12 @@ export class UsersService {
 
 	async getByLogin(login: string) {
 		const user = await this.prisma.user.findUnique({
-			where: { login }
+			where: { login },
+			include: {
+				curator: {
+					include: { group: true }
+				}
+			}
 		})
 
 		if (!user) throw new ConflictException('User not found')
@@ -37,13 +83,31 @@ export class UsersService {
 		return user
 	}
 
-	async remove(id: string) {
+	async removeCurator(id: string) {
 		await this.getById(id)
 
-		const deletedUser = await this.prisma.user.delete({
-			where: { id }
+		const deletedCurator = await this.prisma.user.delete({
+			where: { id, role: 'CURATOR' }
 		})
-		if (!deletedUser) return false
+		if (!deletedCurator) return false
+
+		return true
+	}
+
+	async removeManyCurators(ids: string[]) {
+		const deletedCurators = await this.prisma.user.deleteMany({
+			where: { id: { in: ids }, role: 'CURATOR' }
+		})
+		if (!deletedCurators) return false
+
+		return true
+	}
+
+	async removeAllCurators() {
+		const deletedCurators = await this.prisma.user.deleteMany({
+			where: { role: 'CURATOR' }
+		})
+		if (!deletedCurators) return false
 
 		return true
 	}

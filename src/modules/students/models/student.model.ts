@@ -1,6 +1,5 @@
 import { CertificateModel } from '@/modules/certificates/models/certificate.model'
 import { GroupModel } from '@/modules/groups/models/group.model'
-import { StudentHistoryModel } from '@/modules/student-histories/models/student-history.model'
 import { BaseModel } from '@/shared/base/base.model'
 import { Field, ObjectType } from '@nestjs/graphql'
 
@@ -22,6 +21,4 @@ export class StudentModel extends BaseModel {
 	group?: GroupModel
 	@Field(() => [CertificateModel], { nullable: true })
 	certificates?: CertificateModel[]
-	@Field(() => [StudentHistoryModel], { nullable: true })
-	studentHistories?: StudentHistoryModel[]
 }

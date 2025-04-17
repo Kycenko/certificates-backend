@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common'
 import { Certificate } from '@prisma/client'
 import SuperJSON from 'superjson'
-import { CertificateHistoriesService } from '../certificate-histories/certificate-histories.service'
 import { CertificateInput } from './inputs/certificate.input'
 import { CertificateParamsInput } from './inputs/certificate.params.input'
 import { UpdateCertificateInput } from './inputs/update-certificate.input'
@@ -21,7 +20,6 @@ export class CertificatesService extends BaseService<
 > {
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly histories: CertificateHistoriesService,
 		private readonly redis: RedisService
 	) {
 		super(prisma, 'Certificate')
@@ -148,14 +146,6 @@ export class CertificatesService extends BaseService<
 
 	async update(id: string, data: UpdateCertificateInput) {
 		const updated = await super.update(id, data)
-
-		await this.histories.create({
-			certificateId: id,
-			startDate: data.startDate || updated.startDate,
-			finishDate: data.finishDate || updated.finishDate,
-			healthGroupId: data.healthGroupId,
-			physicalEducationId: data.physicalEducationId
-		})
 
 		await this.redis.del('certificates')
 

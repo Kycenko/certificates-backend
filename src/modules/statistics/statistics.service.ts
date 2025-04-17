@@ -1,19 +1,17 @@
 import { PrismaService } from '@/core/prisma/prisma.service'
-import { DepartmentStatistics } from '@/shared/types/params.types'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export class StatisticsService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async getDepartmentStatistics({ params }: { params: DepartmentStatistics }) {
-		const { id } = params
-		return this.prisma.department.findUnique({
-			where: { id },
+	async getCountStatistics() {
+		const departments = await this.prisma.department.count()
+		const courses = await this.prisma.course.count()
+		const groups = await this.prisma.group.count()
+		const curators = await this.prisma.curator.count()
+		const students = await this.prisma.student.count()
 
-			select: {
-				courses: {}
-			}
-		})
+		return { departments, courses, groups, curators, students }
 	}
 }

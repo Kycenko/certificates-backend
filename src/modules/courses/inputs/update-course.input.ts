@@ -1,10 +1,5 @@
-import { Field, InputType } from '@nestjs/graphql'
+import { InputType, PartialType } from '@nestjs/graphql'
+import { CourseInput } from './course.input'
 
 @InputType()
-export class UpdateCourseInput {
-	@Field(() => String, { nullable: true })
-	number?: string
-
-	@Field(() => String, { nullable: true })
-	departmentId?: string
-}
+export class UpdateCourseInput extends PartialType(CourseInput) {}

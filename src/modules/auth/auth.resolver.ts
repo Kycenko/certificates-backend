@@ -3,10 +3,12 @@ import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import { User } from '@prisma/client'
 
+import { AuthRole } from '@/shared/decorators/role.decorator'
 import { CurrentUser } from '@/shared/decorators/user.decorator'
 import { AuthService } from './auth.service'
 import { LoginInput } from './inputs/login.input'
-import { RegisterInput } from './inputs/register.input'
+import { RegisterAdminInput } from './inputs/register-admin.input'
+import { RegisterCuratorInput } from './inputs/register-curator.input'
 import { AuthModel } from './models/auth.model'
 
 @Resolver()
@@ -19,8 +21,14 @@ export class AuthResolver {
 	}
 
 	@Mutation(() => AuthModel)
-	async register(@Args('data') data: RegisterInput) {
-		return this.authService.register(data)
+	async registerAdmin(@Args('data') data: RegisterAdminInput) {
+		return this.authService.registerAdmin(data)
+	}
+
+	@Mutation(() => AuthModel)
+	@AuthRole('ADMIN')
+	async registerCurator(@Args('data') data: RegisterCuratorInput) {
+		return this.authService.registerCurator(data)
 	}
 
 	@Mutation(() => Boolean)
